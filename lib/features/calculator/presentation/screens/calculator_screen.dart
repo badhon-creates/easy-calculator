@@ -7,10 +7,62 @@ import 'package:easy_calculator/features/calculator/presentation/widgets/basic_k
 import 'package:easy_calculator/features/calculator/presentation/widgets/calculator_display.dart';
 import 'package:easy_calculator/features/calculator/presentation/widgets/mode_menu_button.dart';
 import 'package:easy_calculator/features/calculator/presentation/widgets/scientific_keypad.dart';
+import 'package:easy_calculator/features/history/data/repositories/local_history_repository.dart';
+import 'package:easy_calculator/features/history/presentation/screens/history_screen.dart';
 
-/// The primary screen for Easy Calculator supporting Basic and Scientific modes.
-class CalculatorScreen extends StatelessWidget {
+/// The primary screen for Easy Calculator supporting Basic and Scientific modes,
+/// calculation history access, and Android lifecycle session preservation.
+class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
+
+  @override
+  State<CalculatorScreen> createState() => _CalculatorScreenState();
+}
+
+class _CalculatorScreenState extends State<CalculatorScreen>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) {
+      // Flush active session immediately upon backgrounding, pause, or detachment
+      if (mounted) {
+        context.read<CalculatorCubit>().flushSession();
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      // Purge any expired history entries when application resumes
+      if (mounted) {
+        context
+            .read<CalculatorCubit>()
+            .historyRepository
+            ?.purgeExpiredEntries();
+      }
+    }
+  }
+
+  void _openHistory(BuildContext context) {
+    final cubit = context.read<CalculatorCubit>();
+    final historyRepo = cubit.historyRepository ?? LocalHistoryRepository();
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (_) => HistoryScreen(repository: historyRepo),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +93,7 @@ class CalculatorScreen extends StatelessWidget {
                           size: 26,
                         ),
                         tooltip: 'History',
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Calculation history will be available in Phase 3.',
-                              ),
-                              duration: Duration(seconds: 2),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        },
+                        onPressed: () => _openHistory(context),
                       ),
                       const ModeMenuButton(),
                     ],

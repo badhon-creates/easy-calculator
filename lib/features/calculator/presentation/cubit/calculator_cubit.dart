@@ -1,18 +1,39 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:easy_calculator/core/utils/number_formatter.dart';
 import 'package:easy_calculator/features/calculator/domain/engine/calculator_engine.dart';
 import 'package:easy_calculator/features/calculator/domain/models/angle_mode.dart';
+import 'package:easy_calculator/features/calculator/domain/models/calculator_session.dart';
+import 'package:easy_calculator/features/calculator/domain/repositories/session_repository.dart';
 import 'package:easy_calculator/features/calculator/presentation/cubit/calculator_state.dart';
+import 'package:easy_calculator/features/history/domain/models/history_item.dart';
+import 'package:easy_calculator/features/history/domain/repositories/history_repository.dart';
 
-/// Cubit managing calculator input, evaluation, memory, and mode state.
+/// Cubit managing calculator input, evaluation, memory, mode state, and persistence.
 class CalculatorCubit extends Cubit<CalculatorState> {
-  CalculatorCubit({CalculatorEngine? engine})
-    : _engine = engine ?? const CalculatorEngine(),
-      super(const CalculatorState());
+  CalculatorCubit({
+    CalculatorEngine? engine,
+    this.historyRepository,
+    this.sessionRepository,
+    bool autoRestore = false,
+  }) : _engine = engine ?? const CalculatorEngine(),
+       super(const CalculatorState()) {
+    if (autoRestore) {
+      restoreSession();
+    }
+  }
 
   final CalculatorEngine _engine;
+  final HistoryRepository? historyRepository;
+  final SessionRepository? sessionRepository;
+
+  Timer? _debounceTimer;
+  bool _isRestoring = false;
+  bool _isFlushingImmediately = false;
+  static int _historyCounter = 0;
 
   /// Appends a digit ('0' - '9') to the expression.
   void appendDigit(String digit) {
@@ -566,19 +587,31 @@ class CalculatorCubit extends Cubit<CalculatorState> {
   }
 
   /// Finalizes the calculation on equals ('=').
-  void calculateEquals() {
+  Future<void> calculateEquals() async {
     final expr = state.expression.trim();
     if (expr.isEmpty) return;
 
+    // Prevent duplicate history entries if repeatedly tapping equals on an already evaluated calculation
+    if (state.isResultComputed && state.result != null) return;
+
     final evalResult = _engine.evaluate(expr, angleMode: state.angleMode);
     if (evalResult.isSuccess) {
+      final resultStr = evalResult.formattedResult ?? '';
+      _isFlushingImmediately = true;
       emit(
         state.copyWith(
-          result: evalResult.formattedResult,
+          result: resultStr,
           isResultComputed: true,
           clearError: true,
         ),
       );
+
+      // Record completed calculation to history
+      await _recordHistory(expr, resultStr);
+
+      // Save session immediately on calculation completion
+      await flushSession();
+      _isFlushingImmediately = false;
     } else {
       emit(
         state.copyWith(
@@ -589,8 +622,85 @@ class CalculatorCubit extends Cubit<CalculatorState> {
     }
   }
 
+  Future<void> _recordHistory(String expr, String resultStr) async {
+    if (historyRepository == null) return;
+    final item = HistoryItem(
+      id: '${DateTime.now().millisecondsSinceEpoch}_${_historyCounter++}',
+      expression: expr,
+      result: resultStr,
+      timestamp: DateTime.now(),
+      mode: state.mode == CalculatorMode.scientific ? 'scientific' : 'basic',
+    );
+    await historyRepository!.addEntry(item);
+  }
+
   /// Switches active calculator mode.
-  void setMode(CalculatorMode mode) {
+  Future<void> setMode(CalculatorMode mode) async {
+    _isFlushingImmediately = true;
     emit(state.copyWith(mode: mode));
+    // Immediately flush session state on mode change
+    await flushSession();
+    _isFlushingImmediately = false;
+  }
+
+  /// Restores a previously saved in-progress session.
+  /// Does NOT create duplicate history entries.
+  Future<void> restoreSession() async {
+    if (sessionRepository == null) return;
+    try {
+      final session = await sessionRepository!.loadSession();
+      if (session != null) {
+        _isRestoring = true;
+        emit(session.toState());
+        _isRestoring = false;
+      }
+    } catch (e) {
+      debugPrint('CalculatorCubit: Failed to restore session: $e');
+    }
+  }
+
+  /// Loads a calculation from history into active calculation state.
+  /// Does NOT record another history entry.
+  Future<void> reuseHistoryItem(HistoryItem item) async {
+    _isFlushingImmediately = true;
+    emit(
+      state.copyWith(
+        expression: item.expression,
+        result: item.result,
+        isResultComputed: true,
+        clearError: true,
+      ),
+    );
+    await flushSession();
+    _isFlushingImmediately = false;
+  }
+
+  /// Immediately flushes any pending debounced session save.
+  Future<void> flushSession() async {
+    _debounceTimer?.cancel();
+    if (sessionRepository != null && !_isRestoring) {
+      await sessionRepository!.saveSession(CalculatorSession.fromState(state));
+    }
+  }
+
+  @override
+  void onChange(Change<CalculatorState> change) {
+    super.onChange(change);
+    if (!_isRestoring && !_isFlushingImmediately && sessionRepository != null) {
+      _scheduleSaveSession(change.nextState);
+    }
+  }
+
+  void _scheduleSaveSession(CalculatorState nextState) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 250), () {
+      sessionRepository?.saveSession(CalculatorSession.fromState(nextState));
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _debounceTimer?.cancel();
+    return super.close();
   }
 }
