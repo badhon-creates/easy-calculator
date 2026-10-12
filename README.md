@@ -32,7 +32,7 @@ The application features four core modes:
 ## Project Status
 
 - [x] **Phase 0**: Project Foundation and Verification
-- [ ] **Phase 1**: Design System and Basic Calculator
+- [x] **Phase 1**: Design System and Basic Calculator
 - [ ] **Phase 2**: Scientific Calculator
 - [ ] **Phase 3**: History and Session Persistence
 - [ ] **Phase 4**: Math Notes
