@@ -6,8 +6,9 @@ import 'package:easy_calculator/features/calculator/presentation/cubit/calculato
 import 'package:easy_calculator/features/calculator/presentation/widgets/basic_keypad.dart';
 import 'package:easy_calculator/features/calculator/presentation/widgets/calculator_display.dart';
 import 'package:easy_calculator/features/calculator/presentation/widgets/mode_menu_button.dart';
+import 'package:easy_calculator/features/calculator/presentation/widgets/scientific_keypad.dart';
 
-/// The primary screen for the Basic Calculator.
+/// The primary screen for Easy Calculator supporting Basic and Scientific modes.
 class CalculatorScreen extends StatelessWidget {
   const CalculatorScreen({super.key});
 
@@ -18,64 +19,74 @@ class CalculatorScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.backgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Top Navigation Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.history_rounded,
-                      color: colors.textPrimary,
-                      size: 26,
-                    ),
-                    tooltip: 'History',
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Calculation history will be available in Phase 3.',
-                          ),
-                          duration: Duration(seconds: 2),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
-                  ),
-                  const ModeMenuButton(),
-                ],
-              ),
-            ),
+        child: BlocBuilder<CalculatorCubit, CalculatorState>(
+          builder: (context, state) {
+            final isScientific = state.mode == CalculatorMode.scientific;
 
-            // Expression & Result Display Area
-            Expanded(
-              child: BlocBuilder<CalculatorCubit, CalculatorState>(
-                buildWhen: (prev, curr) =>
-                    prev.expression != curr.expression ||
-                    prev.result != curr.result ||
-                    prev.isResultComputed != curr.isResultComputed ||
-                    prev.errorMessage != curr.errorMessage,
-                builder: (context, state) {
-                  return CalculatorDisplay(
+            return Column(
+              children: [
+                // Top Navigation Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 6.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.history_rounded,
+                          color: colors.textPrimary,
+                          size: 26,
+                        ),
+                        tooltip: 'History',
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Calculation history will be available in Phase 3.',
+                              ),
+                              duration: Duration(seconds: 2),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                      ),
+                      const ModeMenuButton(),
+                    ],
+                  ),
+                ),
+
+                // Expression & Result Display Area
+                Expanded(
+                  child: CalculatorDisplay(
                     expression: state.expression,
                     result: state.result,
                     isResultComputed: state.isResultComputed,
                     errorMessage: state.errorMessage,
-                  );
-                },
-              ),
-            ),
+                    angleMode: state.angleMode,
+                    isSecondary: state.isSecondary,
+                    hasMemory: state.hasMemory,
+                    isScientific: isScientific,
+                  ),
+                ),
 
-            // Arithmetic Keypad
-            const BasicKeypad(),
-            const SizedBox(height: 8),
-          ],
+                // Scientific Controls (Smoothly expand / collapse)
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 280),
+                  curve: Curves.easeInOutCubic,
+                  child: isScientific
+                      ? const ScientificKeypad()
+                      : const SizedBox.shrink(),
+                ),
+
+                // Arithmetic Keypad
+                BasicKeypad(isScientific: isScientific),
+                const SizedBox(height: 6),
+              ],
+            );
+          },
         ),
       ),
     );

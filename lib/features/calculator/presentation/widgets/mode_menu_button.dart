@@ -33,7 +33,8 @@ class ModeMenuButton extends StatelessWidget {
             ),
           ),
           onSelected: (mode) {
-            if (mode == CalculatorMode.basic) {
+            if (mode == CalculatorMode.basic ||
+                mode == CalculatorMode.scientific) {
               cubit.setMode(mode);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(

@@ -8,6 +8,9 @@ enum OperatorType {
   power,
   unaryMinus,
   percent, // Postfix percent operator: x% = x / 100
+  factorial, // Postfix factorial operator: x!
+  scientificNotation, // Infix scientific notation operator: aEb = a * 10^b
+  nthRoot, // Infix y-th root of x: x ʸ√ y
 }
 
 /// A token produced during mathematical expression lexical analysis.
@@ -36,22 +39,29 @@ class CalculatorToken {
       case OperatorType.unaryMinus:
         return 3;
       case OperatorType.power:
+      case OperatorType.nthRoot:
         return 4;
-      case OperatorType.percent:
+      case OperatorType.scientificNotation:
         return 5;
+      case OperatorType.percent:
+      case OperatorType.factorial:
+        return 6;
       case null:
         return 0;
     }
   }
 
-  /// Whether the operator is right-associative (e.g. unary minus, power).
+  /// Whether the operator is right-associative (e.g. unary minus, power, nth root).
   bool get isRightAssociative {
     return operatorType == OperatorType.unaryMinus ||
-        operatorType == OperatorType.power;
+        operatorType == OperatorType.power ||
+        operatorType == OperatorType.nthRoot;
   }
 
-  /// Whether this is a postfix operator (e.g. %).
-  bool get isPostfix => operatorType == OperatorType.percent;
+  /// Whether this is a postfix operator (e.g. %, !).
+  bool get isPostfix =>
+      operatorType == OperatorType.percent ||
+      operatorType == OperatorType.factorial;
 
   @override
   String toString() {

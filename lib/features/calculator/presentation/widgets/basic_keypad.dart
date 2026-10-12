@@ -5,14 +5,19 @@ import 'package:easy_calculator/features/calculator/presentation/cubit/calculato
 import 'package:easy_calculator/features/calculator/presentation/cubit/calculator_state.dart';
 import 'package:easy_calculator/shared/widgets/squircle_button.dart';
 
-/// Keypad providing standard arithmetic operations and squircle buttons.
+/// Keypad providing standard arithmetic operations with responsive sizing for basic and scientific modes.
 class BasicKeypad extends StatelessWidget {
-  const BasicKeypad({super.key});
+  const BasicKeypad({super.key, this.isScientific = false});
+
+  final bool isScientific;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.calcColors;
     final cubit = context.read<CalculatorCubit>();
+    final rowHeight = isScientific ? 46.0 : 72.0;
+    final numFontSize = isScientific ? 22.0 : 28.0;
+    final opFontSize = isScientific ? 22.0 : 28.0;
 
     return BlocBuilder<CalculatorCubit, CalculatorState>(
       buildWhen: (prev, curr) =>
@@ -24,15 +29,19 @@ class BasicKeypad extends StatelessWidget {
             : 'C';
 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: isScientific ? 2.0 : 12.0,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildRow([
+              _buildRow(rowHeight, [
                 _buildButton(
                   text: clearLabel,
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  fontSize: opFontSize,
                   onTap: () => cubit.clear(),
                   semanticLabel: 'Clear',
                 ),
@@ -40,6 +49,7 @@ class BasicKeypad extends StatelessWidget {
                   text: '±',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  fontSize: opFontSize,
                   onTap: () => cubit.toggleSign(),
                   semanticLabel: 'Toggle positive negative',
                 ),
@@ -47,6 +57,7 @@ class BasicKeypad extends StatelessWidget {
                   text: '%',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  fontSize: opFontSize,
                   onTap: () => cubit.appendPercent(),
                   semanticLabel: 'Percentage',
                 ),
@@ -54,57 +65,62 @@ class BasicKeypad extends StatelessWidget {
                   text: '÷',
                   backgroundColor: colors.operatorButton,
                   foregroundColor: colors.operatorText,
+                  fontSize: opFontSize,
                   onTap: () => cubit.appendOperator('÷'),
                   semanticLabel: 'Divide',
                 ),
               ]),
-              const SizedBox(height: 12),
-              _buildRow([
-                _buildNumberButton('7', cubit, colors),
-                _buildNumberButton('8', cubit, colors),
-                _buildNumberButton('9', cubit, colors),
+              SizedBox(height: isScientific ? 5 : 12),
+              _buildRow(rowHeight, [
+                _buildNumberButton('7', cubit, colors, numFontSize),
+                _buildNumberButton('8', cubit, colors, numFontSize),
+                _buildNumberButton('9', cubit, colors, numFontSize),
                 _buildButton(
                   text: '×',
                   backgroundColor: colors.operatorButton,
                   foregroundColor: colors.operatorText,
+                  fontSize: opFontSize,
                   onTap: () => cubit.appendOperator('×'),
                   semanticLabel: 'Multiply',
                 ),
               ]),
-              const SizedBox(height: 12),
-              _buildRow([
-                _buildNumberButton('4', cubit, colors),
-                _buildNumberButton('5', cubit, colors),
-                _buildNumberButton('6', cubit, colors),
+              SizedBox(height: isScientific ? 5 : 12),
+              _buildRow(rowHeight, [
+                _buildNumberButton('4', cubit, colors, numFontSize),
+                _buildNumberButton('5', cubit, colors, numFontSize),
+                _buildNumberButton('6', cubit, colors, numFontSize),
                 _buildButton(
                   text: '−',
                   backgroundColor: colors.operatorButton,
                   foregroundColor: colors.operatorText,
+                  fontSize: opFontSize,
                   onTap: () => cubit.appendOperator('−'),
                   semanticLabel: 'Subtract',
                 ),
               ]),
-              const SizedBox(height: 12),
-              _buildRow([
-                _buildNumberButton('1', cubit, colors),
-                _buildNumberButton('2', cubit, colors),
-                _buildNumberButton('3', cubit, colors),
+              SizedBox(height: isScientific ? 5 : 12),
+              _buildRow(rowHeight, [
+                _buildNumberButton('1', cubit, colors, numFontSize),
+                _buildNumberButton('2', cubit, colors, numFontSize),
+                _buildNumberButton('3', cubit, colors, numFontSize),
                 _buildButton(
                   text: '+',
                   backgroundColor: colors.operatorButton,
                   foregroundColor: colors.operatorText,
+                  fontSize: opFontSize,
                   onTap: () => cubit.appendOperator('+'),
                   semanticLabel: 'Add',
                 ),
               ]),
-              const SizedBox(height: 12),
-              _buildRow([
-                _buildNumberButton('0', cubit, colors),
+              SizedBox(height: isScientific ? 5 : 12),
+              _buildRow(rowHeight, [
+                _buildNumberButton('0', cubit, colors, numFontSize),
                 _buildButton(
                   text: '.',
                   backgroundColor: colors.numberButton,
                   foregroundColor: colors.numberText,
                   borderColor: colors.numberButtonBorder,
+                  fontSize: numFontSize,
                   onTap: () => cubit.appendDecimal(),
                   semanticLabel: 'Decimal point',
                 ),
@@ -112,14 +128,15 @@ class BasicKeypad extends StatelessWidget {
                   icon: Icons.backspace_outlined,
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  fontSize: isScientific ? 19.0 : 22.0,
                   onTap: () => cubit.backspace(),
-                  fontSize: 22.0,
                   semanticLabel: 'Backspace',
                 ),
                 _buildButton(
                   text: '=',
                   backgroundColor: colors.operatorButton,
                   foregroundColor: colors.operatorText,
+                  fontSize: opFontSize,
                   onTap: () => cubit.calculateEquals(),
                   semanticLabel: 'Equals',
                 ),
@@ -131,9 +148,9 @@ class BasicKeypad extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(List<Widget> children) {
+  Widget _buildRow(double height, List<Widget> children) {
     return SizedBox(
-      height: 72,
+      height: height,
       child: Row(
         children: children.map((btn) {
           return Expanded(
@@ -151,12 +168,14 @@ class BasicKeypad extends StatelessWidget {
     String digit,
     CalculatorCubit cubit,
     CalculatorColors colors,
+    double fontSize,
   ) {
     return _buildButton(
       text: digit,
       backgroundColor: colors.numberButton,
       foregroundColor: colors.numberText,
       borderColor: colors.numberButtonBorder,
+      fontSize: fontSize,
       onTap: () => cubit.appendDigit(digit),
       semanticLabel: digit,
     );
