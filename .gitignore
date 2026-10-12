@@ -1,0 +1,60 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+.idea/workspace.xml
+.idea/tasks.xml
+
+# Visual Studio Code
+.vscode/
+
+# Flutter / Dart / Pub
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Android Specific & Gradle
+android/.gradle/
+android/local.properties
+android/captures/
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Security, Signing Keys & Credentials
+*.jks
+*.keystore
+key.properties
+*.env
+.env*
+secrets/
+
+# Symbolication & Obfuscation
+app.*.symbols
+app.*.map.json
+
+# Widget Preview
+.widget_preview/
