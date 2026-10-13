@@ -36,11 +36,20 @@ The application features four core modes:
 - [x] **Phase 2**: Scientific Calculator
 - [x] **Phase 3**: History and Session Persistence
 - [x] **Phase 4**: Math Notes
-- [ ] **Phase 5**: PDF Sharing
+- [x] **Phase 5**: PDF Sharing
 - [ ] **Phase 6**: Currency Converter
 - [ ] **Phase 7**: Hardening, Full Testing, and Release Readiness
 
 ## Architecture & Features
+
+### PDF Sharing & Native Android Share Sheet (Phase 5)
+- **High-Fidelity PDF Generation**: Pure Dart vector document generation (`pdf` package) creating fully selectable, paginated A4 documents preserving note titles, rich-text blocks (Title, Heading, Subheading, Body), inline styles (Bold, Italic, Underline), custom text colors, indented bullet lists, and freehand drawings.
+- **True Vector Drawing Rendering**: Freehand strokes are scaled and mapped to PDF vector graphics paths (`pw.CustomPaint` / `PdfGraphics`), maintaining crispness and color accuracy at any zoom level without pixelation or rasterization.
+- **Automatic Pagination**: Long notes seamlessly flow across multiple pages with standard margins (36 pt), running headers on continuation pages, and dynamic page numbering footers (`Page X of Y`).
+- **Android Native Share Sheet**: Dispatches standard Android system share sheet (`share_plus`) via secure content URIs using Android's `FileProvider`, restricting access to narrowly scoped temporary read permissions without exposing raw filesystem paths.
+- **Safe Temporary File Management**: Generates timestamped export files inside app cache (`math_notes_exports/`) with sanitized filenames, avoiding filename collisions or overwriting actively shared files, accompanied by automatic pruning of temporary exports older than 30 minutes.
+- **Non-Destructive Export**: PDF generation operates on the active note snapshot, flushing in-progress edits while never modifying, duplicating, or corrupting the original stored Math Note.
+- **User Feedback & Debouncing**: Responsive top-bar Share button with subtle loading spinner and tap debouncing to prevent accidental duplicate exports during generation.
 
 ### Math Notes (Phase 4)
 - **Rich Text Editor**: Modular document blocks supporting Title, Heading, Subheading, and Body styling with inline formatting (Bold, Italic, Underline, and customizable text colors) via the `Aa` toolbar.

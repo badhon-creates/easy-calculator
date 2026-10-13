@@ -5,13 +5,17 @@ import 'package:easy_calculator/features/math_notes/domain/models/math_note.dart
 import 'package:easy_calculator/features/math_notes/domain/models/note_block.dart';
 import 'package:easy_calculator/features/math_notes/domain/repositories/note_repository.dart';
 import 'package:easy_calculator/features/math_notes/domain/repositories/note_session_repository.dart';
+import 'package:easy_calculator/features/math_notes/domain/services/pdf_document_generator.dart';
+import 'package:easy_calculator/features/math_notes/domain/services/note_share_service.dart';
+import 'package:easy_calculator/features/math_notes/data/services/pdf_note_generator.dart';
+import 'package:easy_calculator/features/math_notes/data/services/share_plus_note_share_service.dart';
 import 'package:easy_calculator/features/math_notes/presentation/cubit/note_editor_cubit.dart';
 import 'package:easy_calculator/features/math_notes/presentation/cubit/note_editor_state.dart';
 import 'package:easy_calculator/features/math_notes/presentation/widgets/drawing_canvas_view.dart';
 import 'package:easy_calculator/features/math_notes/presentation/widgets/formatting_toolbar.dart';
 
 /// Full-featured Note Editor screen supporting rich text, bullet lists,
-/// freehand drawings, undo/redo, and continuous autosave.
+/// freehand drawings, undo/redo, continuous autosave, and PDF sharing.
 class NoteEditorScreen extends StatefulWidget {
   const NoteEditorScreen({
     super.key,
@@ -19,12 +23,16 @@ class NoteEditorScreen extends StatefulWidget {
     required this.noteRepository,
     required this.sessionRepository,
     this.isNewNote = false,
+    this.pdfGenerator = const PdfNoteGenerator(),
+    this.shareService,
   });
 
   final MathNote note;
   final NoteRepository noteRepository;
   final NoteSessionRepository sessionRepository;
   final bool isNewNote;
+  final PdfDocumentGenerator pdfGenerator;
+  final NoteShareService? shareService;
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -34,6 +42,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
     with WidgetsBindingObserver {
   late final NoteEditorCubit _cubit;
   late final TextEditingController _titleController;
+  late final NoteShareService _shareService;
+  bool _isSharing = false;
   final Map<int, TextEditingController> _blockControllers = {};
   final Map<int, FocusNode> _blockFocusNodes = {};
 
@@ -48,6 +58,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
       isNewNote: widget.isNewNote,
     );
     _titleController = TextEditingController(text: widget.note.title);
+    _shareService = widget.shareService ?? SharePlusNoteShareService();
   }
 
   @override
@@ -107,14 +118,36 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
-  void _onSharePressed() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('PDF Sharing will be available in Phase 5.'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+  Future<void> _onSharePressed() async {
+    if (_isSharing) return;
+    setState(() => _isSharing = true);
+
+    try {
+      // Sync latest title and flush in-progress edits
+      _cubit.setTitle(_titleController.text);
+      await _cubit.saveNow();
+
+      final currentNote = _cubit.state.note;
+      final pdfBytes = await widget.pdfGenerator.generatePdf(currentNote);
+
+      if (!mounted) return;
+      await _shareService.shareNotePdf(currentNote, pdfBytes);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to share PDF: $e'),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red.shade800,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSharing = false);
+      }
+    }
   }
 
   @override
@@ -189,11 +222,22 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                     tooltip: 'Redo',
                     onPressed: state.canRedo ? _cubit.redo : null,
                   ),
-                  // Share button (UI for Phase 4)
+                  // Share button (Phase 5)
                   IconButton(
-                    icon: Icon(Icons.share_rounded, color: colors.textPrimary),
-                    tooltip: 'Share note',
-                    onPressed: _onSharePressed,
+                    icon: _isSharing
+                        ? SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: colors.textPrimary,
+                            ),
+                          )
+                        : Icon(Icons.share_rounded, color: colors.textPrimary),
+                    tooltip: _isSharing
+                        ? 'Generating PDF...'
+                        : 'Share note as PDF',
+                    onPressed: _isSharing ? null : _onSharePressed,
                   ),
                   const SizedBox(width: 4),
                 ],
