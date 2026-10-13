@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_calculator/core/theme/app_theme.dart';
 import 'package:easy_calculator/features/calculator/presentation/cubit/calculator_cubit.dart';
 import 'package:easy_calculator/features/calculator/presentation/cubit/calculator_state.dart';
+import 'package:easy_calculator/features/math_notes/presentation/screens/math_notes_home_screen.dart';
 
 /// Top-right menu allowing mode selection across the four application modes.
 class ModeMenuButton extends StatelessWidget {
@@ -36,6 +37,12 @@ class ModeMenuButton extends StatelessWidget {
             if (mode == CalculatorMode.basic ||
                 mode == CalculatorMode.scientific) {
               cubit.setMode(mode);
+            } else if (mode == CalculatorMode.mathNotes) {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => const MathNotesHomeScreen(),
+                ),
+              );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

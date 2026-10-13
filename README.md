@@ -35,12 +35,21 @@ The application features four core modes:
 - [x] **Phase 1**: Design System and Basic Calculator
 - [x] **Phase 2**: Scientific Calculator
 - [x] **Phase 3**: History and Session Persistence
-- [ ] **Phase 4**: Math Notes
+- [x] **Phase 4**: Math Notes
 - [ ] **Phase 5**: PDF Sharing
 - [ ] **Phase 6**: Currency Converter
 - [ ] **Phase 7**: Hardening, Full Testing, and Release Readiness
 
 ## Architecture & Features
+
+### Math Notes (Phase 4)
+- **Rich Text Editor**: Modular document blocks supporting Title, Heading, Subheading, and Body styling with inline formatting (Bold, Italic, Underline, and customizable text colors) via the `Aa` toolbar.
+- **Smart Bullet Lists**: Dedicated bullet-list tool where pressing Enter on a populated bullet generates the next list item, and pressing Enter on an empty bullet cleanly exits the list.
+- **Freehand Vector Drawing**: Integrated drawing canvas capturing vector stroke points, colors, and widths as structured data without corrupting or replacing typed text.
+- **Indefinite Local Retention**: Saved notes persist indefinitely in app-private storage (`easy_calc_notes.json`) until explicitly deleted by the user. There is no automatic expiry.
+- **Autosave & Session Recovery**: Continuous debounced autosave and lifecycle flushing (`easy_calc_note_session.json`) ensure unfinished drafts restore seamlessly across app backgrounding or termination without creating duplicate notes.
+- **Note Management & Search**: Real-time search by title and content, date sorting, multi-note selection, and permanent deletion with confirmation dialogs.
+- **Navigation Continuity**: Smooth transition between the Calculator and Math Notes with a dedicated return button preserving active calculator session state.
 
 ### History & Session Persistence (Phase 3)
 - **Calculation History**: Automatically captures completed calculations from both Basic and Scientific modes upon pressing `=`. Unfinished expressions and state-restorations are strictly ignored to prevent duplicate entries.
