@@ -4,6 +4,7 @@ import 'package:easy_calculator/core/theme/app_theme.dart';
 import 'package:easy_calculator/features/calculator/presentation/cubit/calculator_cubit.dart';
 import 'package:easy_calculator/features/calculator/presentation/cubit/calculator_state.dart';
 import 'package:easy_calculator/features/math_notes/presentation/screens/math_notes_home_screen.dart';
+import 'package:easy_calculator/features/currency_converter/presentation/screens/currency_converter_screen.dart';
 
 /// Top-right menu allowing mode selection across the four application modes.
 class ModeMenuButton extends StatelessWidget {
@@ -41,6 +42,12 @@ class ModeMenuButton extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (context) => const MathNotesHomeScreen(),
+                ),
+              );
+            } else if (mode == CalculatorMode.convert) {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => CurrencyConverterScreen(),
                 ),
               );
             } else {

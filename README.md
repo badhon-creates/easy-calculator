@@ -37,10 +37,20 @@ The application features four core modes:
 - [x] **Phase 3**: History and Session Persistence
 - [x] **Phase 4**: Math Notes
 - [x] **Phase 5**: PDF Sharing
-- [ ] **Phase 6**: Currency Converter
+- [x] **Phase 6**: Currency Converter
 - [ ] **Phase 7**: Hardening, Full Testing, and Release Readiness
 
 ## Architecture & Features
+
+### Currency Converter (Phase 6)
+- **Live & Reference Rates Integration**: Communicates via HTTPS with the open Frankfurter reference rates service (`api.frankfurter.dev/v2`) providing global central-bank reference rates for 150+ world currencies without embedding confidential API keys or requiring user accounts.
+- **Accurate Cross-Rate Calculation**: Automatically computes cross-currency conversions using reference base rates ($Rate(A \to B) = \frac{Rate(base \to B)}{Rate(base \to A)}$), enabling conversion between all supported pairs (including BDT, USD, EUR, GBP, INR, JPY, and more).
+- **Searchable Currency Selection**: Modal bottom sheet with instant search filtering across 150+ currencies by ISO code, English name, and symbol, complete with country flag emojis and selection indicators.
+- **Dedicated Calculator Keypad**: Custom responsive squircle keypad with large number keys, decimal point, clear, backspace, and quick double-zero (`00`) entry tailored for currency inputs without accidental mode conflicts.
+- **Instant Swapping & Live Recalculation**: Prominent central swap button reversing source and target currencies with instantaneous recalculation.
+- **Local-First Caching & Offline Resilience**: Caches successful currency directories and exchange rate snapshots in app-private storage (`currencies_cache.json`, `rates_cache.json`). When offline, gracefully falls back to cached data, clearly displaying a "Cached" badge and last-updated timestamp without fabricated numbers or app crashes.
+- **Session Persistence**: Remembers the user's active source currency, target currency, and amount across app restarts via `currency_session.json`.
+- **Honest Disclaimers & Rate Freshness**: Prominently labels rates as "Live" or "Cached" with official market publication dates, accompanied by an accessible disclaimer stating reference rates are for informational purposes only.
 
 ### PDF Sharing & Native Android Share Sheet (Phase 5)
 - **High-Fidelity PDF Generation**: Pure Dart vector document generation (`pdf` package) creating fully selectable, paginated A4 documents preserving note titles, rich-text blocks (Title, Heading, Subheading, Body), inline styles (Bold, Italic, Underline), custom text colors, indented bullet lists, and freehand drawings.
