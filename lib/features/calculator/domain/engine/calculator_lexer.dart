@@ -15,6 +15,11 @@ class CalculatorLexer {
     if (cleanExpr.isEmpty) {
       throw const CalculationException('Expression is empty');
     }
+    if (cleanExpr.length > 1000) {
+      throw const CalculationException(
+        'Expression exceeds maximum length of 1000 characters',
+      );
+    }
 
     int i = 0;
     while (i < cleanExpr.length) {

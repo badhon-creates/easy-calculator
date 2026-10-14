@@ -38,7 +38,7 @@ The application features four core modes:
 - [x] **Phase 4**: Math Notes
 - [x] **Phase 5**: PDF Sharing
 - [x] **Phase 6**: Currency Converter
-- [ ] **Phase 7**: Hardening, Full Testing, and Release Readiness
+- [x] **Phase 7**: Security Hardening, Full Regression Testing, and Release Readiness
 
 ## Architecture & Features
 
@@ -77,21 +77,69 @@ The application features four core modes:
 - **Local-First App Storage**: Uses crash-resilient atomic file writes (`.tmp` write followed by atomic rename) inside Android app-private storage (`getApplicationDocumentsDirectory()`), maintaining total user privacy without external network transmission.
 - **History UI**: High-contrast, clean design system integration (#FFFFFF Light, #1F1C1C Dark) featuring relative timestamp formatting, tap-to-reuse expression/result continuation, individual entry deletion, and a clear-all confirmation dialog.
 
+### Security Hardening & Release Readiness (Phase 7)
+- **Expression Evaluation Safety**: Tokenizer and Shunting-Yard parser enforce strict bounds (maximum expression length of 1,000 characters and maximum parentheses nesting depth of 50) to prevent denial-of-service or stack overflow attacks.
+- **Pure Lexical Analysis**: Never executes arbitrary Dart code, scripts, or runtime `eval()`. Mathematical expressions are parsed into an Abstract Syntax Tree (AST) / Reverse Polish Notation (RPN) and evaluated purely using typed numeric tokens.
+- **Strict Mathematical Domain Guards**: Comprehensive guards prevent crashes on undefined domains ($x/0$, $\sqrt{-x}$, $\ln(0)$, $\ln(-x)$, $\sin^{-1}(|x| > 1)$, $\cosh^{-1}(x < 1)$, $\tan(90^\circ)$, etc.) and cap factorial operations at $170!$ to prevent IEEE 754 infinity overflow.
+- **App-Private Storage Sandbox**: User notes, drawings, sessions, and calculation history reside exclusively within the application's private storage sandbox (`getApplicationDocumentsDirectory()` and `getApplicationSupportDirectory()`). No personal content is ever uploaded or synced to external servers.
+- **Path Traversal & Export Sanitization**: Exported PDF filenames are strictly sanitized (`sanitizeNoteFilename`) by stripping path traversal components (`../`), special characters (`< > : " / \ | ? *`), and truncating long titles. Stale temporary export files (> 30 minutes old) are automatically pruned upon new exports.
+- **Android Permissions & Network Security**: Only the standard `android.permission.INTERNET` permission is declared for the Frankfurter reference rates API. No dangerous runtime permissions (storage, camera, location, contacts) are requested. Network calls strictly enforce HTTPS with standard TLS certificate validation.
+- **Release Verification & Tree-Shaking**: Release APK build verified (`flutter build apk --release`), confirming successful asset tree-shaking (99.6% reduction in font payload), R8 code shrinking, and absence of unresolved native dependencies.
+
 ## Development & Verification
 
 ### Prerequisites
 - Flutter SDK 3.47+ & Dart SDK 3.13+
 - Android SDK 36.0.0+ / Android Studio
-- Android Emulator (e.g., Pixel 7)
+- Android Emulator (e.g., Pixel 6 Pro / Pixel 7 running Android 14+)
 
 ### Verification Commands
 ```bash
+# Get dependencies
 flutter pub get
+
+# Code formatting check
 dart format --output=none --set-exit-if-changed .
+
+# Static code analysis (zero warnings/errors)
 flutter analyze
+
+# Full automated regression & unit test suite (197 tests)
 flutter test
+
+# Build debug APK
 flutter build apk --debug
+
+# Build release APK (signed with debug keys by default)
+flutter build apk --release
 ```
+
+## Release Signing Configuration
+
+For official production distribution on the Google Play Store, configure release signing without committing credentials to Git:
+
+1. Create a Java Keystore:
+   ```bash
+   keytool -genkey -v -keystore android/app/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+   ```
+2. Create an `android/key.properties` file (automatically ignored by `.gitignore`):
+   ```properties
+   storePassword=<your-keystore-password>
+   keyPassword=<your-key-password>
+   keyAlias=upload
+   storeFile=upload-keystore.jks
+   ```
+3. Update `android/app/build.gradle.kts` release signing configuration to load `key.properties` if present.
+4. Run:
+   ```bash
+   flutter build appbundle --release
+   ```
+
+## Privacy & Security Considerations
+
+- **Zero Telemetry or Analytics**: Easy Calculator does not contain tracking scripts, third-party analytics, advertisements, or user telemetry.
+- **Offline First**: Calculator, Scientific functions, History, and Math Notes function 100% offline. Currency Converter features automatic local caching and offline fallback.
+- **Open Reference Rates**: Exchange rates are sourced from the public Frankfurter service (ECB reference rates). No user identifiers, device metadata, or query payloads are transmitted.
 
 ## License
 

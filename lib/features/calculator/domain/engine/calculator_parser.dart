@@ -28,6 +28,14 @@ class CalculatorParser {
           break;
 
         case TokenType.openParen:
+          if (operatorStack
+                  .where((t) => t.type == TokenType.openParen)
+                  .length >=
+              50) {
+            throw const CalculationException(
+              'Parentheses nesting exceeds maximum depth (50)',
+            );
+          }
           operatorStack.add(token);
           break;
 
