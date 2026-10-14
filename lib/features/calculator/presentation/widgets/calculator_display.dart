@@ -160,18 +160,26 @@ class CalculatorDisplay extends StatelessWidget {
     required bool isActive,
     bool highlight = false,
   }) {
+    final hasLightBorder = colors.numberButtonBorder != Colors.transparent;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: highlight
             ? colors.operatorButton
-            : colors.functionButton.withValues(alpha: 0.8),
+            : (hasLightBorder
+                  ? colors.numberButton
+                  : colors.functionButton.withValues(alpha: 0.8)),
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: highlight ? colors.operatorButton : colors.numberButtonBorder,
+          width: 1.0,
+        ),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: highlight ? colors.operatorText : colors.textSecondary,
+          color: highlight ? colors.operatorText : colors.textPrimary,
           fontSize: 12,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.2,

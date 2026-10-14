@@ -16,6 +16,8 @@ class CalculatorColors extends ThemeExtension<CalculatorColors> {
     required this.functionButton,
     required this.functionText,
     required this.errorColor,
+    required this.accentHighContrast,
+    required this.disabledColor,
   });
 
   final Color backgroundColor;
@@ -29,6 +31,8 @@ class CalculatorColors extends ThemeExtension<CalculatorColors> {
   final Color functionButton;
   final Color functionText;
   final Color errorColor;
+  final Color accentHighContrast;
+  final Color disabledColor;
 
   static const CalculatorColors light = CalculatorColors(
     backgroundColor: AppColors.lightBackground,
@@ -42,6 +46,8 @@ class CalculatorColors extends ThemeExtension<CalculatorColors> {
     functionButton: AppColors.lightFunctionButton,
     functionText: AppColors.lightFunctionText,
     errorColor: AppColors.errorRed,
+    accentHighContrast: AppColors.lightAccentHighContrast,
+    disabledColor: AppColors.lightDisabled,
   );
 
   static const CalculatorColors dark = CalculatorColors(
@@ -56,6 +62,8 @@ class CalculatorColors extends ThemeExtension<CalculatorColors> {
     functionButton: AppColors.darkFunctionButton,
     functionText: AppColors.darkFunctionText,
     errorColor: AppColors.errorRed,
+    accentHighContrast: AppColors.darkAccentHighContrast,
+    disabledColor: AppColors.darkDisabled,
   );
 
   @override
@@ -71,6 +79,8 @@ class CalculatorColors extends ThemeExtension<CalculatorColors> {
     Color? functionButton,
     Color? functionText,
     Color? errorColor,
+    Color? accentHighContrast,
+    Color? disabledColor,
   }) {
     return CalculatorColors(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -84,6 +94,8 @@ class CalculatorColors extends ThemeExtension<CalculatorColors> {
       functionButton: functionButton ?? this.functionButton,
       functionText: functionText ?? this.functionText,
       errorColor: errorColor ?? this.errorColor,
+      accentHighContrast: accentHighContrast ?? this.accentHighContrast,
+      disabledColor: disabledColor ?? this.disabledColor,
     );
   }
 
@@ -106,6 +118,12 @@ class CalculatorColors extends ThemeExtension<CalculatorColors> {
       functionButton: Color.lerp(functionButton, other.functionButton, t)!,
       functionText: Color.lerp(functionText, other.functionText, t)!,
       errorColor: Color.lerp(errorColor, other.errorColor, t)!,
+      accentHighContrast: Color.lerp(
+        accentHighContrast,
+        other.accentHighContrast,
+        t,
+      )!,
+      disabledColor: Color.lerp(disabledColor, other.disabledColor, t)!,
     );
   }
 }

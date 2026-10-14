@@ -33,8 +33,12 @@ class CurrencyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.0),
         border: Border.all(
           color: isSource
-              ? colors.operatorButton.withValues(alpha: 0.35)
-              : colors.textSecondary.withValues(alpha: 0.15),
+              ? (isDark
+                    ? colors.operatorButton.withValues(alpha: 0.35)
+                    : colors.operatorButton)
+              : (isDark
+                    ? colors.textSecondary.withValues(alpha: 0.15)
+                    : colors.numberButtonBorder),
           width: 1.5,
         ),
       ),
@@ -52,8 +56,12 @@ class CurrencyCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isSource
-                      ? colors.operatorButton.withValues(alpha: 0.15)
-                      : colors.textSecondary.withValues(alpha: 0.12),
+                      ? (isDark
+                            ? colors.operatorButton.withValues(alpha: 0.15)
+                            : colors.operatorButton.withValues(alpha: 0.22))
+                      : (isDark
+                            ? colors.textSecondary.withValues(alpha: 0.12)
+                            : const Color(0xFFE2E8F0)),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -63,8 +71,12 @@ class CurrencyCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.8,
                     color: isSource
-                        ? colors.operatorButton
-                        : colors.textSecondary,
+                        ? (isDark
+                              ? colors.operatorButton
+                              : colors.accentHighContrast)
+                        : (isDark
+                              ? colors.textSecondary
+                              : const Color(0xFF334155)),
                   ),
                 ),
               ),
@@ -84,7 +96,9 @@ class CurrencyCard extends StatelessWidget {
                     color: isDark ? const Color(0xFF383535) : Colors.white,
                     borderRadius: BorderRadius.circular(16.0),
                     border: Border.all(
-                      color: colors.textSecondary.withValues(alpha: 0.2),
+                      color: isDark
+                          ? colors.textSecondary.withValues(alpha: 0.2)
+                          : colors.numberButtonBorder,
                       width: 1,
                     ),
                     boxShadow: [
@@ -114,7 +128,7 @@ class CurrencyCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Icon(
                         Icons.keyboard_arrow_down_rounded,
-                        color: colors.textSecondary,
+                        color: colors.textPrimary,
                         size: 20,
                       ),
                     ],
@@ -140,6 +154,7 @@ class CurrencyCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         color: colors.textSecondary,
+                        fontWeight: FontWeight.w500,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -150,7 +165,7 @@ class CurrencyCard extends StatelessWidget {
                         secondaryText!,
                         style: TextStyle(
                           fontSize: 11,
-                          color: colors.textSecondary.withValues(alpha: 0.8),
+                          color: colors.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -176,7 +191,9 @@ class CurrencyCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         color: isSource
                             ? colors.textPrimary
-                            : colors.operatorButton,
+                            : (isDark
+                                  ? colors.operatorButton
+                                  : colors.accentHighContrast),
                         letterSpacing: -0.5,
                       ),
                     ),

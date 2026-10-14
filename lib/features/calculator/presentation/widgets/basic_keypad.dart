@@ -41,25 +41,31 @@ class BasicKeypad extends StatelessWidget {
                   text: clearLabel,
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: opFontSize,
                   onTap: () => cubit.clear(),
                   semanticLabel: 'Clear',
+                  colors: colors,
                 ),
                 _buildButton(
                   text: '±',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: opFontSize,
                   onTap: () => cubit.toggleSign(),
                   semanticLabel: 'Toggle positive negative',
+                  colors: colors,
                 ),
                 _buildButton(
                   text: '%',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: opFontSize,
                   onTap: () => cubit.appendPercent(),
                   semanticLabel: 'Percentage',
+                  colors: colors,
                 ),
                 _buildButton(
                   text: '÷',
@@ -68,6 +74,7 @@ class BasicKeypad extends StatelessWidget {
                   fontSize: opFontSize,
                   onTap: () => cubit.appendOperator('÷'),
                   semanticLabel: 'Divide',
+                  colors: colors,
                 ),
               ]),
               SizedBox(height: isScientific ? 5 : 12),
@@ -128,9 +135,11 @@ class BasicKeypad extends StatelessWidget {
                   icon: Icons.backspace_outlined,
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: isScientific ? 19.0 : 22.0,
                   onTap: () => cubit.backspace(),
                   semanticLabel: 'Backspace',
+                  colors: colors,
                 ),
                 _buildButton(
                   text: '=',
@@ -190,13 +199,20 @@ class BasicKeypad extends StatelessWidget {
     required VoidCallback onTap,
     double fontSize = 28.0,
     String? semanticLabel,
+    CalculatorColors? colors,
   }) {
+    final effectiveBorder =
+        borderColor ??
+        (colors != null && backgroundColor != colors.operatorButton
+            ? colors.numberButtonBorder
+            : null);
+
     return SquircleButton(
       text: text,
       icon: icon,
       backgroundColor: backgroundColor,
       foregroundColor: foregroundColor,
-      borderColor: borderColor,
+      borderColor: effectiveBorder,
       fontSize: fontSize,
       onTap: onTap,
       semanticLabel: semanticLabel,

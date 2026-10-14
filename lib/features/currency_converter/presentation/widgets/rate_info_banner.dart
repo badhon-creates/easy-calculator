@@ -64,7 +64,9 @@ class RateInfoBanner extends StatelessWidget {
         color: isDark ? const Color(0xFF232020) : const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(16.0),
         border: Border.all(
-          color: colors.textSecondary.withValues(alpha: 0.1),
+          color: isDark
+              ? colors.textSecondary.withValues(alpha: 0.1)
+              : colors.numberButtonBorder,
           width: 1,
         ),
       ),
@@ -105,10 +107,14 @@ class RateInfoBanner extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: isCached
-                      ? Colors.orange.withValues(alpha: 0.15)
+                      ? Colors.orange.withValues(alpha: isDark ? 0.2 : 0.15)
                       : (hasRate
-                            ? Colors.green.withValues(alpha: 0.15)
-                            : Colors.red.withValues(alpha: 0.15)),
+                            ? Colors.green.withValues(
+                                alpha: isDark ? 0.2 : 0.15,
+                              )
+                            : Colors.red.withValues(
+                                alpha: isDark ? 0.2 : 0.15,
+                              )),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -130,11 +136,17 @@ class RateInfoBanner extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: isCached
-                            ? Colors.orange.shade800
-                            : (hasRate
-                                  ? Colors.green.shade800
-                                  : Colors.red.shade800),
+                        color: isDark
+                            ? (isCached
+                                  ? Colors.orange.shade300
+                                  : (hasRate
+                                        ? Colors.green.shade300
+                                        : Colors.red.shade300))
+                            : (isCached
+                                  ? Colors.orange.shade900
+                                  : (hasRate
+                                        ? Colors.green.shade900
+                                        : Colors.red.shade900)),
                       ),
                     ),
                   ],
@@ -150,12 +162,16 @@ class RateInfoBanner extends StatelessWidget {
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: colors.operatorButton,
+                          color: isDark
+                              ? colors.operatorButton
+                              : colors.accentHighContrast,
                         ),
                       )
                     : Icon(
                         Icons.refresh_rounded,
-                        color: colors.operatorButton,
+                        color: isDark
+                            ? colors.operatorButton
+                            : colors.accentHighContrast,
                         size: 20,
                       ),
                 tooltip: 'Refresh exchange rates',
@@ -175,8 +191,8 @@ class RateInfoBanner extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.schedule_rounded,
-                        size: 12,
-                        color: colors.textSecondary.withValues(alpha: 0.7),
+                        size: 13,
+                        color: colors.textSecondary,
                       ),
                       const SizedBox(width: 4),
                       Expanded(
@@ -186,7 +202,8 @@ class RateInfoBanner extends StatelessWidget {
                               : 'Market date: ${snapshot!.date}',
                           style: TextStyle(
                             fontSize: 11,
-                            color: colors.textSecondary.withValues(alpha: 0.8),
+                            color: colors.textSecondary,
+                            fontWeight: FontWeight.w500,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -204,15 +221,16 @@ class RateInfoBanner extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.info_outline_rounded,
-                        size: 12,
-                        color: colors.textSecondary.withValues(alpha: 0.7),
+                        size: 13,
+                        color: colors.textSecondary,
                       ),
                       const SizedBox(width: 2),
                       Text(
                         'Disclaimer',
                         style: TextStyle(
                           fontSize: 11,
-                          color: colors.textSecondary.withValues(alpha: 0.8),
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w500,
                           decoration: TextDecoration.underline,
                         ),
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_calculator/core/theme/app_theme.dart';
+import 'package:easy_calculator/core/theme/squircle_border.dart';
 import 'package:easy_calculator/features/currency_converter/data/providers/frankfurter_exchange_rate_provider.dart';
 import 'package:easy_calculator/features/currency_converter/data/repositories/local_currency_repository.dart';
 import 'package:easy_calculator/features/currency_converter/domain/repositories/currency_repository.dart';
@@ -172,10 +173,10 @@ class _CurrencyConverterView extends StatelessWidget {
                                     child: Center(
                                       child: Material(
                                         color: colors.operatorButton,
-                                        shape: const CircleBorder(),
+                                        shape: const SquircleBorder(),
                                         elevation: 2,
                                         child: InkWell(
-                                          customBorder: const CircleBorder(),
+                                          customBorder: const SquircleBorder(),
                                           onTap: cubit.swapCurrencies,
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),

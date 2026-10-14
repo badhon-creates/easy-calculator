@@ -61,7 +61,7 @@ class TextFormattingBottomSheet extends StatelessWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: colors.textSecondary.withValues(alpha: 0.3),
+                  color: colors.disabledColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -79,7 +79,7 @@ class TextFormattingBottomSheet extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close_rounded, color: colors.textSecondary),
+                  icon: Icon(Icons.close_rounded, color: colors.textPrimary),
                   onPressed: () => Navigator.pop(context),
                   tooltip: 'Close',
                 ),

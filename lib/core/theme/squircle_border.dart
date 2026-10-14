@@ -2,25 +2,35 @@ import 'package:flutter/material.dart';
 
 /// A custom squircle/superellipse shape border for calculator buttons.
 /// Produces continuous curvature with straight horizontal/vertical edges
-/// and large, smooth corners matching the approved PRD visual reference.
+/// and large, smooth corners matching the reference image.
 class SquircleBorder extends OutlinedBorder {
   const SquircleBorder({
     super.side = BorderSide.none,
-    this.radius = 24.0,
-    this.smoothness = 0.8,
+    this.radius,
+    this.smoothness = 0.85,
+    this.cornerRatio = 0.332,
+    this.curvature = 0.55,
   });
 
-  /// The nominal corner radius.
-  final double radius;
+  /// The nominal corner radius. If null or <= 0, automatically derived from [cornerRatio].
+  final double? radius;
 
-  /// Smoothness factor (0.0 = regular rounded rect, 1.0 = deep superellipse/squircle).
+  /// Smoothness factor preserved for backward compatibility.
   final double smoothness;
+
+  /// Corner ratio relative to min(width, height). Defaults to 0.332 (~33%) matching reference image.
+  final double cornerRatio;
+
+  /// Bezier control point curvature ratio. Defaults to 0.55 matching reference image.
+  final double curvature;
 
   @override
   ShapeBorder scale(double t) => SquircleBorder(
     side: side.scale(t),
-    radius: radius * t,
+    radius: radius != null ? radius! * t : null,
     smoothness: smoothness,
+    cornerRatio: cornerRatio,
+    curvature: curvature,
   );
 
   @override
@@ -28,11 +38,15 @@ class SquircleBorder extends OutlinedBorder {
     BorderSide? side,
     double? radius,
     double? smoothness,
+    double? cornerRatio,
+    double? curvature,
   }) {
     return SquircleBorder(
       side: side ?? this.side,
       radius: radius ?? this.radius,
       smoothness: smoothness ?? this.smoothness,
+      cornerRatio: cornerRatio ?? this.cornerRatio,
+      curvature: curvature ?? this.curvature,
     );
   }
 
@@ -49,64 +63,57 @@ class SquircleBorder extends OutlinedBorder {
   Path _buildSquirclePath(Rect rect) {
     final width = rect.width;
     final height = rect.height;
-    final maxRadius = (width < height ? width : height) / 2;
-    final r = radius.clamp(0.0, maxRadius);
+    if (width <= 0 || height <= 0) {
+      return Path();
+    }
 
-    if (r == 0) {
+    final shortestSide = width < height ? width : height;
+    final maxCorner = shortestSide * 0.45;
+
+    // Determine corner span c
+    final double c;
+    if (radius != null && radius! > 0) {
+      c = radius!.clamp(0.0, maxCorner);
+    } else {
+      c = (shortestSide * cornerRatio).clamp(0.0, maxCorner);
+    }
+
+    if (c <= 0) {
       return Path()..addRect(rect);
     }
 
-    // Smoothness determines how far into the straight edges the curve extends.
-    final p = (r * (1 + smoothness * 0.5)).clamp(r, maxRadius);
-    final offset = (p - r) * 0.8;
+    final k = curvature.clamp(0.1, 0.9);
+    final l = rect.left;
+    final t = rect.top;
+    final r = rect.right;
+    final b = rect.bottom;
 
     final path = Path();
-    // Top-left corner start
-    path.moveTo(rect.left + p, rect.top);
 
-    // Top edge -> Top-right corner
-    path.lineTo(rect.right - p, rect.top);
-    path.cubicTo(
-      rect.right - p + offset,
-      rect.top,
-      rect.right,
-      rect.top + p - offset,
-      rect.right,
-      rect.top + p,
-    );
+    // Top edge: from (l + c, t) to (r - c, t)
+    path.moveTo(l + c, t);
+    path.lineTo(r - c, t);
 
-    // Right edge -> Bottom-right corner
-    path.lineTo(rect.right, rect.bottom - p);
-    path.cubicTo(
-      rect.right,
-      rect.bottom - p + offset,
-      rect.right - p + offset,
-      rect.bottom,
-      rect.right - p,
-      rect.bottom,
-    );
+    // Top-right corner: from (r - c, t) to (r, t + c)
+    path.cubicTo(r - k * c, t, r, t + k * c, r, t + c);
 
-    // Bottom edge -> Bottom-left corner
-    path.lineTo(rect.left + p, rect.bottom);
-    path.cubicTo(
-      rect.left + p - offset,
-      rect.bottom,
-      rect.left,
-      rect.bottom - p + offset,
-      rect.left,
-      rect.bottom - p,
-    );
+    // Right edge: from (r, t + c) to (r, b - c)
+    path.lineTo(r, b - c);
 
-    // Left edge -> Top-left corner
-    path.lineTo(rect.left, rect.top + p);
-    path.cubicTo(
-      rect.left,
-      rect.top + p - offset,
-      rect.left + p - offset,
-      rect.top,
-      rect.left + p,
-      rect.top,
-    );
+    // Bottom-right corner: from (r, b - c) to (r - c, b)
+    path.cubicTo(r, b - k * c, r - k * c, b, r - c, b);
+
+    // Bottom edge: from (r - c, b) to (l + c, b)
+    path.lineTo(l + c, b);
+
+    // Bottom-left corner: from (l + c, b) to (l, b - c)
+    path.cubicTo(l + k * c, b, l, b - k * c, l, b - c);
+
+    // Left edge: from (l, b - c) to (l, t + c)
+    path.lineTo(l, t + c);
+
+    // Top-left corner: from (l, t + c) to (l + c, t)
+    path.cubicTo(l, t + k * c, l + k * c, t, l + c, t);
 
     path.close();
     return path;
@@ -116,7 +123,7 @@ class SquircleBorder extends OutlinedBorder {
   void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
     if (side == BorderSide.none || side.width == 0.0) return;
     final paint = side.toPaint();
-    final path = getOuterPath(rect, textDirection: textDirection);
+    final path = _buildSquirclePath(rect.deflate(side.width / 2.0));
     canvas.drawPath(path, paint);
   }
 
@@ -127,9 +134,12 @@ class SquircleBorder extends OutlinedBorder {
     return other is SquircleBorder &&
         other.side == side &&
         other.radius == radius &&
-        other.smoothness == smoothness;
+        other.smoothness == smoothness &&
+        other.cornerRatio == cornerRatio &&
+        other.curvature == curvature;
   }
 
   @override
-  int get hashCode => Object.hash(side, radius, smoothness);
+  int get hashCode =>
+      Object.hash(side, radius, smoothness, cornerRatio, curvature);
 }

@@ -206,7 +206,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                       Icons.undo_rounded,
                       color: state.canUndo
                           ? colors.textPrimary
-                          : colors.textSecondary.withValues(alpha: 0.3),
+                          : colors.disabledColor,
                     ),
                     tooltip: 'Undo',
                     onPressed: state.canUndo ? _cubit.undo : null,
@@ -217,7 +217,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                       Icons.redo_rounded,
                       color: state.canRedo
                           ? colors.textPrimary
-                          : colors.textSecondary.withValues(alpha: 0.3),
+                          : colors.disabledColor,
                     ),
                     tooltip: 'Redo',
                     onPressed: state.canRedo ? _cubit.redo : null,
@@ -266,7 +266,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                               hintText: 'Title',
                               hintStyle: TextStyle(
                                 color: colors.textSecondary.withValues(
-                                  alpha: 0.5,
+                                  alpha: isDark ? 0.5 : 0.7,
                                 ),
                                 fontSize: 26,
                                 fontWeight: FontWeight.bold,
@@ -357,7 +357,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                                 border: Border.all(
                                   color: isDark
                                       ? Colors.white12
-                                      : Colors.black12,
+                                      : colors.numberButtonBorder,
                                 ),
                               ),
                               child: DrawingCanvasView(

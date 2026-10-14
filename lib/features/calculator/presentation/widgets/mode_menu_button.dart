@@ -30,7 +30,9 @@ class ModeMenuButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
             side: BorderSide(
-              color: colors.textSecondary.withValues(alpha: 0.2),
+              color: colors.numberButtonBorder != Colors.transparent
+                  ? colors.numberButtonBorder
+                  : colors.textSecondary.withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -105,15 +107,16 @@ class ModeMenuButton extends StatelessWidget {
     required bool isSelected,
   }) {
     final colors = context.calcColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedAccent = isSelected
+        ? (isDark ? colors.operatorButton : colors.accentHighContrast)
+        : colors.textSecondary;
+
     return PopupMenuItem<CalculatorMode>(
       value: mode,
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: isSelected ? colors.operatorButton : colors.textSecondary,
-          ),
+          Icon(icon, size: 20, color: selectedAccent),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -125,7 +128,7 @@ class ModeMenuButton extends StatelessWidget {
             ),
           ),
           if (isSelected)
-            Icon(Icons.check_rounded, size: 20, color: colors.operatorButton),
+            Icon(Icons.check_rounded, size: 20, color: selectedAccent),
         ],
       ),
     );

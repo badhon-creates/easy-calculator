@@ -222,7 +222,9 @@ class _MathNotesHomeScreenState extends State<MathNotesHomeScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.0),
                       side: BorderSide(
-                        color: isDark ? Colors.white12 : Colors.black12,
+                        color: isDark
+                            ? Colors.white12
+                            : colors.numberButtonBorder,
                       ),
                     ),
                     onSelected: (value) {
@@ -298,7 +300,9 @@ class _MathNotesHomeScreenState extends State<MathNotesHomeScreen> {
                                   : const Color(0xFFF1F5F9),
                               borderRadius: BorderRadius.circular(24.0),
                               border: Border.all(
-                                color: isDark ? Colors.white12 : Colors.black12,
+                                color: isDark
+                                    ? Colors.white12
+                                    : colors.numberButtonBorder,
                               ),
                             ),
                             child: TextField(
@@ -310,14 +314,12 @@ class _MathNotesHomeScreenState extends State<MathNotesHomeScreen> {
                               decoration: InputDecoration(
                                 hintText: 'Search notes...',
                                 hintStyle: TextStyle(
-                                  color: colors.textSecondary.withValues(
-                                    alpha: 0.6,
-                                  ),
+                                  color: colors.textSecondary,
                                   fontSize: 15,
                                 ),
                                 prefixIcon: Icon(
                                   Icons.search_rounded,
-                                  color: colors.textSecondary,
+                                  color: colors.textPrimary,
                                   size: 22,
                                 ),
                                 suffixIcon: state.hasActiveSearch

@@ -101,7 +101,7 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: colors.textSecondary.withValues(alpha: 0.3),
+                color: colors.disabledColor,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -126,10 +126,7 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: Icon(
-                      Icons.close_rounded,
-                      color: colors.textSecondary,
-                    ),
+                    icon: Icon(Icons.close_rounded, color: colors.textPrimary),
                     onPressed: () => Navigator.of(context).pop(),
                     tooltip: 'Close',
                   ),
@@ -147,12 +144,12 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
                 decoration: InputDecoration(
                   hintText: 'Search currency (e.g. USD, BDT, Euro)...',
                   hintStyle: TextStyle(
-                    color: colors.textSecondary.withValues(alpha: 0.7),
+                    color: colors.textSecondary,
                     fontSize: 15,
                   ),
                   prefixIcon: Icon(
                     Icons.search_rounded,
-                    color: colors.textSecondary,
+                    color: colors.textPrimary,
                   ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
@@ -172,7 +169,12 @@ class _CurrencySelectionModalState extends State<CurrencySelectionModal> {
                       : const Color(0xFFF1F5F9),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
-                    borderSide: BorderSide.none,
+                    borderSide: isDark
+                        ? BorderSide.none
+                        : BorderSide(
+                            color: colors.numberButtonBorder,
+                            width: 1,
+                          ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,

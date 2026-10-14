@@ -35,6 +35,7 @@ class ScientificKeypad extends StatelessWidget {
                   text: angleText,
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: 13.0,
                   fontWeight: FontWeight.w600,
                   onTap: () => cubit.toggleAngleMode(),
@@ -48,6 +49,7 @@ class ScientificKeypad extends StatelessWidget {
                   foregroundColor: is2nd
                       ? colors.operatorText
                       : colors.functionText,
+                  borderColor: is2nd ? null : colors.numberButtonBorder,
                   fontSize: 14.0,
                   fontWeight: FontWeight.w600,
                   onTap: () => cubit.toggleSecondary(),
@@ -57,6 +59,7 @@ class ScientificKeypad extends StatelessWidget {
                   text: '(',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: 17.0,
                   onTap: () => cubit.appendParenthesis('('),
                   semanticLabel: 'Open parenthesis',
@@ -65,6 +68,7 @@ class ScientificKeypad extends StatelessWidget {
                   text: ')',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: 17.0,
                   onTap: () => cubit.appendParenthesis(')'),
                   semanticLabel: 'Close parenthesis',
@@ -73,6 +77,7 @@ class ScientificKeypad extends StatelessWidget {
                   text: 'mc',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: 14.0,
                   onTap: () => cubit.memoryClear(),
                   semanticLabel: 'Memory clear',
@@ -83,6 +88,7 @@ class ScientificKeypad extends StatelessWidget {
                       ? colors.operatorButton.withValues(alpha: 0.25)
                       : colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: 14.0,
                   fontWeight: state.hasMemory
                       ? FontWeight.w700
@@ -99,6 +105,7 @@ class ScientificKeypad extends StatelessWidget {
                   text: 'm+',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: 14.0,
                   onTap: () => cubit.memoryAdd(),
                   semanticLabel: 'Memory add',
@@ -107,6 +114,7 @@ class ScientificKeypad extends StatelessWidget {
                   text: 'm−',
                   backgroundColor: colors.functionButton,
                   foregroundColor: colors.functionText,
+                  borderColor: colors.numberButtonBorder,
                   fontSize: 14.0,
                   onTap: () => cubit.memorySubtract(),
                   semanticLabel: 'Memory subtract',

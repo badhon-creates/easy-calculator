@@ -82,11 +82,7 @@ class _SquircleButtonState extends State<SquircleButton>
         ? BorderSide(color: widget.borderColor!, width: 1.0)
         : BorderSide.none;
 
-    final shape = SquircleBorder(
-      side: borderSide,
-      radius: 22.0,
-      smoothness: 0.85,
-    );
+    final shape = SquircleBorder(side: borderSide);
 
     return Semantics(
       button: true,

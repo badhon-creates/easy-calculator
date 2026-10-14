@@ -37,7 +37,7 @@ class FormattingToolbar extends StatelessWidget {
         color: colors.backgroundColor,
         border: Border(
           top: BorderSide(
-            color: isDark ? Colors.white12 : Colors.black12,
+            color: isDark ? Colors.white12 : colors.numberButtonBorder,
             width: 1.0,
           ),
         ),
