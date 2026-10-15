@@ -8,7 +8,7 @@ The application features four core modes:
 1. **Basic**: Fast, reliable daily arithmetic with smooth expression-to-result transitions.
 2. **Scientific**: Advanced mathematics including trigonometry, hyperbolic functions, memory operations, degree/radian angle modes, powers, roots, and constants.
 3. **Math Notes**: A local-first rich note-taking environment supporting formatted text, bullet lists, freehand vector drawings, and high-fidelity PDF sharing.
-4. **Convert**: Currency conversion powered by live exchange rates with local caching and offline support.
+4. **Convert**: Multi-category units converter covering 15 measurement categories (Angle, Area, Currency, Data, Energy, Force, Fuel, Length, Power, Pressure, Speed, Temperature, Time, Volume, and Weight) powered by live exchange rates and high-precision scientific conversion formulas.
 
 ## Design Identity
 
@@ -39,8 +39,25 @@ The application features four core modes:
 - [x] **Phase 5**: PDF Sharing
 - [x] **Phase 6**: Currency Converter
 - [x] **Phase 7**: Security Hardening, Full Regression Testing, and Release Readiness
+- [x] **Phase 8**: Multi-Category Units Converter
 
 ## Architecture & Features
+
+### Units Converter (Phase 8)
+- **15 Measurement Categories**: Comprehensive coverage across Angle, Area, Currency, Data, Energy, Force, Fuel, Length, Power, Pressure, Speed, Temperature, Time, Volume, and Weight.
+- **Accurate Scientific & Engineering Formulas**:
+  - *Temperature*: Full affine transformations for Celsius, Fahrenheit, Kelvin, and Rankine with absolute zero safety guards and negative number support.
+  - *Fuel Economy*: Handles reciprocal and direct efficiency conversions across Kilometers per Liter (`km/L`), Liters per 100km (`L/100 km`), US MPG (`mpg US`), and Imperial MPG (`mpg Imp`).
+  - *Data Units*: Explicit differentiation between SI decimal units (KB, MB, GB, TB) and IEC binary units (KiB, MiB, GiB, TiB).
+  - *Angles & Physical Units*: High-precision conversion for Degrees, Radians, Gradians, Newtons, Dyne, Joules, BTUs, Pascals, PSI, and all metric/imperial lengths and weights.
+- **iOS-Inspired Units Screen & Selection Experience**:
+  - Horizontal category selector bar with smooth pill scrolling and active accent styling.
+  - Interactive source ("FROM") and target ("TO") cards with squircle geometry, unit symbols, and unit titles.
+  - Central swap button reversing source and destination units with instantaneous recalculation.
+  - Contextual unit selection bottom sheet featuring category switcher, instant unit search filtering, and left checkmark selection indicators.
+  - Live formula relationship banner displaying exact mathematical conversion formulas.
+- **Dynamic Keypad Adaptation**: Keypad automatically switches between `00` (for standard units) and `±` sign toggle (for Temperature conversions).
+- **Phase 6 Currency Preservation**: Seamlessly embeds the existing Phase 6 Currency Converter (live rates from Frankfurter API, offline local caching, disclaimers, and 150+ world currencies) directly under the "Currency" category tab.
 
 ### Currency Converter (Phase 6)
 - **Live & Reference Rates Integration**: Communicates via HTTPS with the open Frankfurter reference rates service (`api.frankfurter.dev/v2`) providing global central-bank reference rates for 150+ world currencies without embedding confidential API keys or requiring user accounts.
