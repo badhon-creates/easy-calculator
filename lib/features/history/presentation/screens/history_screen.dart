@@ -168,52 +168,59 @@ class _HistoryView extends StatelessWidget {
               );
             }
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // 7-day retention informative badge
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 4.0,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline_rounded,
-                        size: 14,
-                        color: colors.textSecondary,
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 680),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 7-day retention informative badge
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 4.0,
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Retained for 7 calendar days on device',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.textSecondary,
-                        ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline_rounded,
+                            size: 14,
+                            color: colors.textSecondary,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Retained for 7 calendar days on device',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 4),
+                    ),
+                    const SizedBox(height: 4),
 
-                // History list
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.items.length,
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    itemBuilder: (context, index) {
-                      final item = state.items[index];
-                      return HistoryItemTile(
-                        item: item,
-                        onTap: (selected) => _onSelectEntry(context, selected),
-                        onDelete: () =>
-                            context.read<HistoryCubit>().deleteItem(item.id),
-                      );
-                    },
-                  ),
+                    // History list
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: state.items.length,
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        itemBuilder: (context, index) {
+                          final item = state.items[index];
+                          return HistoryItemTile(
+                            item: item,
+                            onTap: (selected) =>
+                                _onSelectEntry(context, selected),
+                            onDelete: () => context
+                                .read<HistoryCubit>()
+                                .deleteItem(item.id),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             );
           },
         ),

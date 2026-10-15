@@ -12,6 +12,7 @@ class NoteCard extends StatelessWidget {
     this.onLongPress,
     this.isSelected = false,
     this.isSelectionMode = false,
+    this.margin,
   });
 
   final MathNote note;
@@ -19,6 +20,7 @@ class NoteCard extends StatelessWidget {
   final VoidCallback? onLongPress;
   final bool isSelected;
   final bool isSelectionMode;
+  final EdgeInsetsGeometry? margin;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,8 @@ class NoteCard extends StatelessWidget {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+      margin:
+          margin ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(16.0),

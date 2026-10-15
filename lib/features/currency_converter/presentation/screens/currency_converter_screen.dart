@@ -90,6 +90,9 @@ class _CurrencyConverterView extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        final isLandscape =
+            MediaQuery.of(context).orientation == Orientation.landscape;
+
         return Scaffold(
           backgroundColor: colors.backgroundColor,
           appBar: AppBar(
@@ -140,96 +143,207 @@ class _CurrencyConverterView extends StatelessWidget {
               : SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                    child: Column(
-                      children: [
-                        // Scrollable/flexible upper display cards
-                        Expanded(
-                          child: SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 4),
-
-                                // Source (From) Card
-                                CurrencyCard(
-                                  label: 'From',
-                                  currency: state.sourceCurrency,
-                                  amountText: state.amountInput,
-                                  isSource: true,
-                                  onSelectCurrency: () => _selectSourceCurrency(
-                                    context,
-                                    cubit,
-                                    state,
-                                  ),
-                                ),
-
-                                // Swap button in between
-                                Transform.translate(
-                                  offset: const Offset(0, 0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 4.0,
-                                    ),
-                                    child: Center(
-                                      child: Material(
-                                        color: colors.operatorButton,
-                                        shape: const SquircleBorder(),
-                                        elevation: 2,
-                                        child: InkWell(
-                                          customBorder: const SquircleBorder(),
-                                          onTap: cubit.swapCurrencies,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Icon(
-                                              Icons.swap_vert_rounded,
-                                              color: colors.operatorText,
-                                              size: 22,
+                    child: isLandscape
+                        ? Row(
+                            children: [
+                              Expanded(
+                                flex: 48,
+                                child: SingleChildScrollView(
+                                  physics: const BouncingScrollPhysics(),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 4),
+                                      CurrencyCard(
+                                        label: 'From',
+                                        currency: state.sourceCurrency,
+                                        amountText: state.amountInput,
+                                        isSource: true,
+                                        onSelectCurrency: () =>
+                                            _selectSourceCurrency(
+                                              context,
+                                              cubit,
+                                              state,
+                                            ),
+                                      ),
+                                      Transform.translate(
+                                        offset: const Offset(0, 0),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 4.0,
+                                          ),
+                                          child: Center(
+                                            child: Material(
+                                              color: colors.operatorButton,
+                                              shape: const SquircleBorder(),
+                                              elevation: 2,
+                                              child: InkWell(
+                                                customBorder:
+                                                    const SquircleBorder(),
+                                                onTap: cubit.swapCurrencies,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    8.0,
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.swap_vert_rounded,
+                                                    color: colors.operatorText,
+                                                    size: 22,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
+                                      CurrencyCard(
+                                        label: 'To',
+                                        currency: state.targetCurrency,
+                                        amountText:
+                                            state
+                                                .conversionResult
+                                                ?.formattedTarget ??
+                                            '—',
+                                        isSource: false,
+                                        onSelectCurrency: () =>
+                                            _selectTargetCurrency(
+                                              context,
+                                              cubit,
+                                              state,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      RateInfoBanner(
+                                        sourceCurrency: state.sourceCurrency,
+                                        targetCurrency: state.targetCurrency,
+                                        result: state.conversionResult,
+                                        snapshot: state.snapshot,
+                                        onRefresh: cubit.refreshRates,
+                                        isRefreshing: state.isRefreshing,
+                                      ),
+                                      const SizedBox(height: 6),
+                                    ],
                                   ),
                                 ),
+                              ),
+                              Container(
+                                width: 1,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                  vertical: 8.0,
+                                ),
+                                color:
+                                    colors.numberButtonBorder !=
+                                        Colors.transparent
+                                    ? colors.numberButtonBorder
+                                    : colors.textSecondary.withValues(
+                                        alpha: 0.15,
+                                      ),
+                              ),
+                              const Expanded(
+                                flex: 52,
+                                child: Center(
+                                  child: ConverterKeypad(isLandscape: true),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              // Scrollable/flexible upper display cards
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  physics: const BouncingScrollPhysics(),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 4),
 
-                                // Target (To) Card
-                                CurrencyCard(
-                                  label: 'To',
-                                  currency: state.targetCurrency,
-                                  amountText:
-                                      state.conversionResult?.formattedTarget ??
-                                      '—',
-                                  isSource: false,
-                                  onSelectCurrency: () => _selectTargetCurrency(
-                                    context,
-                                    cubit,
-                                    state,
+                                      // Source (From) Card
+                                      CurrencyCard(
+                                        label: 'From',
+                                        currency: state.sourceCurrency,
+                                        amountText: state.amountInput,
+                                        isSource: true,
+                                        onSelectCurrency: () =>
+                                            _selectSourceCurrency(
+                                              context,
+                                              cubit,
+                                              state,
+                                            ),
+                                      ),
+
+                                      // Swap button in between
+                                      Transform.translate(
+                                        offset: const Offset(0, 0),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 4.0,
+                                          ),
+                                          child: Center(
+                                            child: Material(
+                                              color: colors.operatorButton,
+                                              shape: const SquircleBorder(),
+                                              elevation: 2,
+                                              child: InkWell(
+                                                customBorder:
+                                                    const SquircleBorder(),
+                                                onTap: cubit.swapCurrencies,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    8.0,
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.swap_vert_rounded,
+                                                    color: colors.operatorText,
+                                                    size: 22,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Target (To) Card
+                                      CurrencyCard(
+                                        label: 'To',
+                                        currency: state.targetCurrency,
+                                        amountText:
+                                            state
+                                                .conversionResult
+                                                ?.formattedTarget ??
+                                            '—',
+                                        isSource: false,
+                                        onSelectCurrency: () =>
+                                            _selectTargetCurrency(
+                                              context,
+                                              cubit,
+                                              state,
+                                            ),
+                                      ),
+
+                                      const SizedBox(height: 10),
+
+                                      // Rate Info Banner
+                                      RateInfoBanner(
+                                        sourceCurrency: state.sourceCurrency,
+                                        targetCurrency: state.targetCurrency,
+                                        result: state.conversionResult,
+                                        snapshot: state.snapshot,
+                                        onRefresh: cubit.refreshRates,
+                                        isRefreshing: state.isRefreshing,
+                                      ),
+
+                                      const SizedBox(height: 6),
+                                    ],
                                   ),
                                 ),
+                              ),
 
-                                const SizedBox(height: 10),
-
-                                // Rate Info Banner
-                                RateInfoBanner(
-                                  sourceCurrency: state.sourceCurrency,
-                                  targetCurrency: state.targetCurrency,
-                                  result: state.conversionResult,
-                                  snapshot: state.snapshot,
-                                  onRefresh: cubit.refreshRates,
-                                  isRefreshing: state.isRefreshing,
-                                ),
-
-                                const SizedBox(height: 6),
-                              ],
-                            ),
+                              // Keypad Section
+                              const ConverterKeypad(),
+                              const SizedBox(height: 6),
+                            ],
                           ),
-                        ),
-
-                        // Keypad Section
-                        const ConverterKeypad(),
-                        const SizedBox(height: 6),
-                      ],
-                    ),
                   ),
                 ),
         );

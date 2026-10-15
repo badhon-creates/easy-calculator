@@ -6,11 +6,13 @@ import 'package:easy_calculator/shared/widgets/squircle_button.dart';
 
 /// Responsive keypad component for currency amount entry with squircle buttons.
 class ConverterKeypad extends StatelessWidget {
-  const ConverterKeypad({super.key});
+  const ConverterKeypad({super.key, this.isLandscape = false});
+
+  final bool isLandscape;
 
   Widget _buildRow(double height, List<Widget> children) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: EdgeInsets.symmetric(vertical: isLandscape ? 2.0 : 4.0),
       child: SizedBox(
         height: height,
         child: Row(
@@ -38,10 +40,14 @@ class ConverterKeypad extends StatelessWidget {
       builder: (context, constraints) {
         // Adapt row height dynamically to available vertical space
         final availableHeight = constraints.maxHeight;
-        final rowHeight = (availableHeight > 0 && availableHeight < 320)
-            ? (availableHeight / 5.4).clamp(42.0, 60.0)
-            : 58.0;
-        final fontSize = rowHeight < 50 ? 20.0 : 24.0;
+        final rowHeight = isLandscape
+            ? ((availableHeight > 0)
+                  ? (availableHeight / 5.8).clamp(36.0, 40.0)
+                  : 39.0)
+            : ((availableHeight > 0 && availableHeight < 320)
+                  ? (availableHeight / 5.4).clamp(42.0, 60.0)
+                  : 58.0);
+        final fontSize = rowHeight < 45 ? 19.0 : 24.0;
 
         return Column(
           mainAxisSize: MainAxisSize.min,

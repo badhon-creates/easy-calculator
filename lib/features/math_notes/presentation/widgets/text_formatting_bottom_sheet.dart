@@ -35,7 +35,10 @@ class TextFormattingBottomSheet extends StatelessWidget {
     final colors = context.calcColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final maxHeight = MediaQuery.of(context).size.height * 0.88;
+
     return Container(
+      constraints: BoxConstraints(maxHeight: maxHeight),
       decoration: BoxDecoration(
         color: colors.backgroundColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24.0)),
@@ -50,177 +53,180 @@ class TextFormattingBottomSheet extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
       child: SafeArea(
         top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Drag handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: colors.disabledColor,
-                  borderRadius: BorderRadius.circular(2),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Drag handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: colors.disabledColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Text Formatting',
-                  style: TextStyle(
-                    color: colors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close_rounded, color: colors.textPrimary),
-                  onPressed: () => Navigator.pop(context),
-                  tooltip: 'Close',
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Style selector: Title, Heading, Subheading, Body
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildStyleChip(
-                    context,
-                    type: NoteBlockType.title,
-                    label: 'Title',
-                    isSelected: state.activeBlockType == NoteBlockType.title,
+                  Text(
+                    'Text Formatting',
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  _buildStyleChip(
-                    context,
-                    type: NoteBlockType.heading,
-                    label: 'Heading',
-                    isSelected: state.activeBlockType == NoteBlockType.heading,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildStyleChip(
-                    context,
-                    type: NoteBlockType.subheading,
-                    label: 'Subheading',
-                    isSelected:
-                        state.activeBlockType == NoteBlockType.subheading,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildStyleChip(
-                    context,
-                    type: NoteBlockType.body,
-                    label: 'Body',
-                    isSelected: state.activeBlockType == NoteBlockType.body,
+                  IconButton(
+                    icon: Icon(Icons.close_rounded, color: colors.textPrimary),
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Close',
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
-            // Inline styles: Bold, Italic, Underline
-            Row(
-              children: [
-                _buildFormatButton(
-                  context,
-                  label: 'B',
-                  isBoldLabel: true,
-                  isActive: state.isBold,
-                  tooltip: 'Bold',
-                  onTap: cubit.toggleBold,
-                ),
-                const SizedBox(width: 12),
-                _buildFormatButton(
-                  context,
-                  label: 'I',
-                  isItalicLabel: true,
-                  isActive: state.isItalic,
-                  tooltip: 'Italic',
-                  onTap: cubit.toggleItalic,
-                ),
-                const SizedBox(width: 12),
-                _buildFormatButton(
-                  context,
-                  label: 'U',
-                  isUnderlineLabel: true,
-                  isActive: state.isUnderline,
-                  tooltip: 'Underline',
-                  onTap: cubit.toggleUnderline,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Color picker row
-            Text(
-              'Text Color',
-              style: TextStyle(
-                color: colors.textSecondary,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: _palette.map((item) {
-                  final hex = item['hex']!;
-                  final isDefault = hex.isEmpty;
-                  final isSelected = isDefault
-                      ? state.textColorHex == null
-                      : state.textColorHex == hex;
-
-                  Color chipColor;
-                  if (isDefault) {
-                    chipColor = isDark ? Colors.white : Colors.black;
-                  } else {
-                    chipColor = parseHexColor(hex);
-                  }
-
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        cubit.setTextColor(isDefault ? null : hex);
-                      },
-                      child: Container(
-                        width: 34,
-                        height: 34,
-                        decoration: BoxDecoration(
-                          color: chipColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isSelected
-                                ? colors.operatorButton
-                                : (isDark ? Colors.white24 : Colors.black26),
-                            width: isSelected ? 3.0 : 1.5,
-                          ),
-                        ),
-                        child: isSelected
-                            ? Icon(
-                                Icons.check_rounded,
-                                size: 18,
-                                color: (chipColor.computeLuminance() > 0.5)
-                                    ? Colors.black
-                                    : Colors.white,
-                              )
-                            : null,
-                      ),
+              // Style selector: Title, Heading, Subheading, Body
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildStyleChip(
+                      context,
+                      type: NoteBlockType.title,
+                      label: 'Title',
+                      isSelected: state.activeBlockType == NoteBlockType.title,
                     ),
-                  );
-                }).toList(),
+                    const SizedBox(width: 8),
+                    _buildStyleChip(
+                      context,
+                      type: NoteBlockType.heading,
+                      label: 'Heading',
+                      isSelected:
+                          state.activeBlockType == NoteBlockType.heading,
+                    ),
+                    const SizedBox(width: 8),
+                    _buildStyleChip(
+                      context,
+                      type: NoteBlockType.subheading,
+                      label: 'Subheading',
+                      isSelected:
+                          state.activeBlockType == NoteBlockType.subheading,
+                    ),
+                    const SizedBox(width: 8),
+                    _buildStyleChip(
+                      context,
+                      type: NoteBlockType.body,
+                      label: 'Body',
+                      isSelected: state.activeBlockType == NoteBlockType.body,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-          ],
+              const SizedBox(height: 16),
+
+              // Inline styles: Bold, Italic, Underline
+              Row(
+                children: [
+                  _buildFormatButton(
+                    context,
+                    label: 'B',
+                    isBoldLabel: true,
+                    isActive: state.isBold,
+                    tooltip: 'Bold',
+                    onTap: cubit.toggleBold,
+                  ),
+                  const SizedBox(width: 12),
+                  _buildFormatButton(
+                    context,
+                    label: 'I',
+                    isItalicLabel: true,
+                    isActive: state.isItalic,
+                    tooltip: 'Italic',
+                    onTap: cubit.toggleItalic,
+                  ),
+                  const SizedBox(width: 12),
+                  _buildFormatButton(
+                    context,
+                    label: 'U',
+                    isUnderlineLabel: true,
+                    isActive: state.isUnderline,
+                    tooltip: 'Underline',
+                    onTap: cubit.toggleUnderline,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Color picker row
+              Text(
+                'Text Color',
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _palette.map((item) {
+                    final hex = item['hex']!;
+                    final isDefault = hex.isEmpty;
+                    final isSelected = isDefault
+                        ? state.textColorHex == null
+                        : state.textColorHex == hex;
+
+                    Color chipColor;
+                    if (isDefault) {
+                      chipColor = isDark ? Colors.white : Colors.black;
+                    } else {
+                      chipColor = parseHexColor(hex);
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          cubit.setTextColor(isDefault ? null : hex);
+                        },
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: chipColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected
+                                  ? colors.operatorButton
+                                  : (isDark ? Colors.white24 : Colors.black26),
+                              width: isSelected ? 3.0 : 1.5,
+                            ),
+                          ),
+                          child: isSelected
+                              ? Icon(
+                                  Icons.check_rounded,
+                                  size: 18,
+                                  color: (chipColor.computeLuminance() > 0.5)
+                                      ? Colors.black
+                                      : Colors.white,
+                                )
+                              : null,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );

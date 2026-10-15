@@ -140,6 +140,9 @@ class _MathNotesHomeScreenState extends State<MathNotesHomeScreen> {
     final colors = context.calcColors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return BlocProvider.value(
       value: _cubit,
       child: BlocBuilder<NotesListCubit, NotesListState>(
@@ -282,136 +285,196 @@ class _MathNotesHomeScreenState extends State<MathNotesHomeScreen> {
                 ],
               ],
             ),
-            body: Column(
-              children: [
-                // Top Search bar with New-Note pencil button
-                if (!state.isSelectionMode)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 12.0),
-                    child: Row(
-                      children: [
-                        // Search text field
-                        Expanded(
-                          child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0xFF2A2626)
-                                  : const Color(0xFFF1F5F9),
-                              borderRadius: BorderRadius.circular(24.0),
-                              border: Border.all(
-                                color: isDark
-                                    ? Colors.white12
-                                    : colors.numberButtonBorder,
-                              ),
-                            ),
-                            child: TextField(
-                              controller: _searchController,
-                              style: TextStyle(
-                                color: colors.textPrimary,
-                                fontSize: 15,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Search notes...',
-                                hintStyle: TextStyle(
-                                  color: colors.textSecondary,
-                                  fontSize: 15,
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.search_rounded,
-                                  color: colors.textPrimary,
-                                  size: 22,
-                                ),
-                                suffixIcon: state.hasActiveSearch
-                                    ? IconButton(
-                                        icon: Icon(
-                                          Icons.clear_rounded,
-                                          color: colors.textSecondary,
-                                          size: 18,
-                                        ),
-                                        onPressed: () {
-                                          _searchController.clear();
-                                          _cubit.clearSearch();
-                                        },
-                                      )
-                                    : null,
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 12.0,
-                                ),
-                              ),
-                              onChanged: _cubit.setSearchQuery,
-                            ),
-                          ),
+            body: SafeArea(
+              top: false,
+              child: Column(
+                children: [
+                  // Top Search bar with New-Note pencil button
+                  if (!state.isSelectionMode)
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: isLandscape ? 840 : double.infinity,
                         ),
-                        const SizedBox(width: 10),
-
-                        // Pencil / New Note Icon Button
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: colors.operatorButton,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: colors.operatorButton.withValues(
-                                  alpha: 0.3,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            16.0,
+                            4.0,
+                            16.0,
+                            12.0,
+                          ),
+                          child: Row(
+                            children: [
+                              // Search text field
+                              Expanded(
+                                child: Container(
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? const Color(0xFF2A2626)
+                                        : const Color(0xFFF1F5F9),
+                                    borderRadius: BorderRadius.circular(24.0),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white12
+                                          : colors.numberButtonBorder,
+                                    ),
+                                  ),
+                                  child: TextField(
+                                    controller: _searchController,
+                                    style: TextStyle(
+                                      color: colors.textPrimary,
+                                      fontSize: 15,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: 'Search notes...',
+                                      hintStyle: TextStyle(
+                                        color: colors.textSecondary,
+                                        fontSize: 15,
+                                      ),
+                                      prefixIcon: Icon(
+                                        Icons.search_rounded,
+                                        color: colors.textPrimary,
+                                        size: 22,
+                                      ),
+                                      suffixIcon: state.hasActiveSearch
+                                          ? IconButton(
+                                              icon: Icon(
+                                                Icons.clear_rounded,
+                                                color: colors.textSecondary,
+                                                size: 18,
+                                              ),
+                                              onPressed: () {
+                                                _searchController.clear();
+                                                _cubit.clearSearch();
+                                              },
+                                            )
+                                          : null,
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            vertical: 12.0,
+                                          ),
+                                    ),
+                                    onChanged: _cubit.setSearchQuery,
+                                  ),
                                 ),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                              ),
+                              const SizedBox(width: 10),
+
+                              // Pencil / New Note Icon Button
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: colors.operatorButton,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: colors.operatorButton.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.edit_rounded,
+                                    color: colors.operatorText,
+                                    size: 22,
+                                  ),
+                                  tooltip: 'New note',
+                                  onPressed: _createNewNote,
+                                ),
                               ),
                             ],
                           ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit_rounded,
-                              color: colors.operatorText,
-                              size: 22,
-                            ),
-                            tooltip: 'New note',
-                            onPressed: _createNewNote,
-                          ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
 
-                // Note list or empty states
-                Expanded(
-                  child: state.isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : state.notes.isEmpty
-                      ? _buildEmptyState(context, state)
-                      : ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 24.0),
-                          itemCount: state.notes.length,
-                          itemBuilder: (context, index) {
-                            final note = state.notes[index];
-                            final isSelected = state.selectedIds.contains(
-                              note.id,
-                            );
-                            return NoteCard(
-                              note: note,
-                              isSelected: isSelected,
-                              isSelectionMode: state.isSelectionMode,
-                              onTap: () {
-                                if (state.isSelectionMode) {
-                                  _cubit.toggleSelection(note.id);
-                                } else {
-                                  _openNoteEditor(note);
-                                }
-                              },
-                              onLongPress: () {
-                                if (!state.isSelectionMode) {
-                                  _cubit.enterSelectionMode(note.id);
-                                }
-                              },
-                            );
-                          },
-                        ),
-                ),
-              ],
+                  // Note list or empty states
+                  Expanded(
+                    child: state.isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : state.notes.isEmpty
+                        ? _buildEmptyState(context, state)
+                        : isLandscape
+                        ? Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 880),
+                              child: GridView.builder(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 6.0,
+                                ),
+                                gridDelegate:
+                                    const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 440,
+                                      mainAxisExtent: 135,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 10,
+                                    ),
+                                itemCount: state.notes.length,
+                                itemBuilder: (context, index) {
+                                  final note = state.notes[index];
+                                  final isSelected = state.selectedIds.contains(
+                                    note.id,
+                                  );
+                                  return NoteCard(
+                                    note: note,
+                                    isSelected: isSelected,
+                                    isSelectionMode: state.isSelectionMode,
+                                    margin: EdgeInsets.zero,
+                                    onTap: () {
+                                      if (state.isSelectionMode) {
+                                        _cubit.toggleSelection(note.id);
+                                      } else {
+                                        _openNoteEditor(note);
+                                      }
+                                    },
+                                    onLongPress: () {
+                                      if (!state.isSelectionMode) {
+                                        _cubit.enterSelectionMode(note.id);
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.only(bottom: 24.0),
+                            itemCount: state.notes.length,
+                            itemBuilder: (context, index) {
+                              final note = state.notes[index];
+                              final isSelected = state.selectedIds.contains(
+                                note.id,
+                              );
+                              return NoteCard(
+                                note: note,
+                                isSelected: isSelected,
+                                isSelectionMode: state.isSelectionMode,
+                                onTap: () {
+                                  if (state.isSelectionMode) {
+                                    _cubit.toggleSelection(note.id);
+                                  } else {
+                                    _openNoteEditor(note);
+                                  }
+                                },
+                                onLongPress: () {
+                                  if (!state.isSelectionMode) {
+                                    _cubit.enterSelectionMode(note.id);
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
             ),
           );
         },

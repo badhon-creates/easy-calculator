@@ -133,6 +133,8 @@ class _UnitsConverterView extends StatelessWidget {
     return BlocBuilder<UnitsConverterCubit, UnitsConverterState>(
       builder: (context, unitsState) {
         final isCurrency = unitsState.activeCategory == UnitCategory.currency;
+        final isLandscape =
+            MediaQuery.of(context).orientation == Orientation.landscape;
 
         return Scaffold(
           backgroundColor: colors.backgroundColor,
@@ -166,28 +168,89 @@ class _UnitsConverterView extends StatelessWidget {
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 6),
-                  // Horizontal Category Selector Tab Bar
-                  CategorySelectorBar(
-                    activeCategory: unitsState.activeCategory,
-                    onSelectCategory: unitsCubit.selectCategory,
-                  ),
-                  const SizedBox(height: 10),
+              child: isLandscape
+                  ? Column(
+                      children: [
+                        const SizedBox(height: 4),
+                        // Horizontal Category Selector Tab Bar
+                        CategorySelectorBar(
+                          activeCategory: unitsState.activeCategory,
+                          onSelectCategory: unitsCubit.selectCategory,
+                        ),
+                        const SizedBox(height: 8),
+                        // 2-Column landscape body: Left = Cards/Info, Right = Keypad
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 48,
+                                child: isCurrency
+                                    ? _buildCurrencyContent(
+                                        context,
+                                        currencyCubit,
+                                      )
+                                    : _buildUnitsContent(
+                                        context,
+                                        unitsCubit,
+                                        unitsState,
+                                      ),
+                              ),
+                              Container(
+                                width: 1,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                  vertical: 8.0,
+                                ),
+                                color:
+                                    colors.numberButtonBorder !=
+                                        Colors.transparent
+                                    ? colors.numberButtonBorder
+                                    : colors.textSecondary.withValues(
+                                        alpha: 0.15,
+                                      ),
+                              ),
+                              Expanded(
+                                flex: 52,
+                                child: Center(
+                                  child: isCurrency
+                                      ? const ConverterKeypad(isLandscape: true)
+                                      : const UnitKeypad(isLandscape: true),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        const SizedBox(height: 6),
+                        // Horizontal Category Selector Tab Bar
+                        CategorySelectorBar(
+                          activeCategory: unitsState.activeCategory,
+                          onSelectCategory: unitsCubit.selectCategory,
+                        ),
+                        const SizedBox(height: 10),
 
-                  // Content Area
-                  Expanded(
-                    child: isCurrency
-                        ? _buildCurrencyContent(context, currencyCubit)
-                        : _buildUnitsContent(context, unitsCubit, unitsState),
-                  ),
+                        // Content Area
+                        Expanded(
+                          child: isCurrency
+                              ? _buildCurrencyContent(context, currencyCubit)
+                              : _buildUnitsContent(
+                                  context,
+                                  unitsCubit,
+                                  unitsState,
+                                ),
+                        ),
 
-                  // Keypad Section
-                  isCurrency ? const ConverterKeypad() : const UnitKeypad(),
-                  const SizedBox(height: 6),
-                ],
-              ),
+                        // Keypad Section
+                        isCurrency
+                            ? const ConverterKeypad()
+                            : const UnitKeypad(),
+                        const SizedBox(height: 6),
+                      ],
+                    ),
             ),
           ),
         );

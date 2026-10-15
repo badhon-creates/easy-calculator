@@ -7,17 +7,23 @@ import 'package:easy_calculator/shared/widgets/squircle_button.dart';
 
 /// Keypad providing standard arithmetic operations with responsive sizing for basic and scientific modes.
 class BasicKeypad extends StatelessWidget {
-  const BasicKeypad({super.key, this.isScientific = false});
+  const BasicKeypad({
+    super.key,
+    this.isScientific = false,
+    this.isLandscape = false,
+  });
 
   final bool isScientific;
+  final bool isLandscape;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.calcColors;
     final cubit = context.read<CalculatorCubit>();
-    final rowHeight = isScientific ? 46.0 : 72.0;
-    final numFontSize = isScientific ? 22.0 : 28.0;
-    final opFontSize = isScientific ? 22.0 : 28.0;
+    final rowHeight = isScientific ? 46.0 : (isLandscape ? 52.0 : 72.0);
+    final numFontSize = isScientific ? 22.0 : (isLandscape ? 24.0 : 28.0);
+    final opFontSize = isScientific ? 22.0 : (isLandscape ? 24.0 : 28.0);
+    final rowSpacing = isScientific ? 5.0 : (isLandscape ? 6.0 : 12.0);
 
     return BlocBuilder<CalculatorCubit, CalculatorState>(
       buildWhen: (prev, curr) =>
@@ -31,7 +37,7 @@ class BasicKeypad extends StatelessWidget {
         return Padding(
           padding: EdgeInsets.symmetric(
             horizontal: 16.0,
-            vertical: isScientific ? 2.0 : 12.0,
+            vertical: isScientific ? 2.0 : (isLandscape ? 4.0 : 12.0),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -77,7 +83,7 @@ class BasicKeypad extends StatelessWidget {
                   colors: colors,
                 ),
               ]),
-              SizedBox(height: isScientific ? 5 : 12),
+              SizedBox(height: rowSpacing),
               _buildRow(rowHeight, [
                 _buildNumberButton('7', cubit, colors, numFontSize),
                 _buildNumberButton('8', cubit, colors, numFontSize),
@@ -91,7 +97,7 @@ class BasicKeypad extends StatelessWidget {
                   semanticLabel: 'Multiply',
                 ),
               ]),
-              SizedBox(height: isScientific ? 5 : 12),
+              SizedBox(height: rowSpacing),
               _buildRow(rowHeight, [
                 _buildNumberButton('4', cubit, colors, numFontSize),
                 _buildNumberButton('5', cubit, colors, numFontSize),
@@ -105,7 +111,7 @@ class BasicKeypad extends StatelessWidget {
                   semanticLabel: 'Subtract',
                 ),
               ]),
-              SizedBox(height: isScientific ? 5 : 12),
+              SizedBox(height: rowSpacing),
               _buildRow(rowHeight, [
                 _buildNumberButton('1', cubit, colors, numFontSize),
                 _buildNumberButton('2', cubit, colors, numFontSize),
@@ -119,7 +125,7 @@ class BasicKeypad extends StatelessWidget {
                   semanticLabel: 'Add',
                 ),
               ]),
-              SizedBox(height: isScientific ? 5 : 12),
+              SizedBox(height: rowSpacing),
               _buildRow(rowHeight, [
                 _buildNumberButton('0', cubit, colors, numFontSize),
                 _buildButton(

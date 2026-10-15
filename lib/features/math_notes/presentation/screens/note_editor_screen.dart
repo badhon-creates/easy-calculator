@@ -242,140 +242,171 @@ class _NoteEditorScreenState extends State<NoteEditorScreen>
                   const SizedBox(width: 4),
                 ],
               ),
-              body: Column(
-                children: [
-                  // Main note scrollable content
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 8.0,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Note Title field
-                          TextField(
-                            controller: _titleController,
-                            style: TextStyle(
-                              color: colors.textPrimary,
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
+              body: SafeArea(
+                top: false,
+                child: Column(
+                  children: [
+                    // Main note scrollable content
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 8.0,
+                        ),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth:
+                                  MediaQuery.of(context).orientation ==
+                                      Orientation.landscape
+                                  ? 860
+                                  : double.infinity,
                             ),
-                            decoration: InputDecoration(
-                              hintText: 'Title',
-                              hintStyle: TextStyle(
-                                color: colors.textSecondary.withValues(
-                                  alpha: isDark ? 0.5 : 0.7,
-                                ),
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                            onChanged: _cubit.setTitle,
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Rich Text Blocks
-                          ...List.generate(state.note.blocks.length, (index) {
-                            return _buildBlockField(context, state, index);
-                          }),
-
-                          const SizedBox(height: 16),
-
-                          // Freehand Drawing Section
-                          if (state.isDrawingMode) ...[
-                            Text(
-                              'Drawing Canvas',
-                              style: TextStyle(
-                                color: colors.operatorButton,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(0xFF2A2626)
-                                    : const Color(0xFFF0F0F0),
-                                borderRadius: BorderRadius.circular(16.0),
-                                border: Border.all(
-                                  color: colors.operatorButton,
-                                  width: 2.0,
-                                ),
-                              ),
-                              child: DrawingCanvasView(
-                                strokes: state.note.drawings,
-                                currentPoints: state.currentStrokePoints,
-                                activeColorHex: state.drawingColorHex,
-                                activeStrokeWidth: state.drawingStrokeWidth,
-                                isInteractive: true,
-                                height: 260,
-                                onPanStart: (pos) =>
-                                    _cubit.startStroke(pos.dx, pos.dy),
-                                onPanUpdate: (pos) =>
-                                    _cubit.addStrokePoint(pos.dx, pos.dy),
-                                onPanEnd: _cubit.endStroke,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                          ] else if (state.note.hasDrawings) ...[
-                            // Rendered drawings viewer when not actively drawing
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Drawings',
+                                // Note Title field
+                                TextField(
+                                  controller: _titleController,
                                   style: TextStyle(
-                                    color: colors.textSecondary,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
+                                    color: colors.textPrimary,
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
                                   ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Title',
+                                    hintStyle: TextStyle(
+                                      color: colors.textSecondary.withValues(
+                                        alpha: isDark ? 0.5 : 0.7,
+                                      ),
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  onChanged: _cubit.setTitle,
                                 ),
-                                TextButton.icon(
-                                  icon: const Icon(
-                                    Icons.edit_rounded,
-                                    size: 14,
+                                const SizedBox(height: 16),
+
+                                // Rich Text Blocks
+                                ...List.generate(state.note.blocks.length, (
+                                  index,
+                                ) {
+                                  return _buildBlockField(
+                                    context,
+                                    state,
+                                    index,
+                                  );
+                                }),
+
+                                const SizedBox(height: 16),
+
+                                // Freehand Drawing Section
+                                if (state.isDrawingMode) ...[
+                                  Text(
+                                    'Drawing Canvas',
+                                    style: TextStyle(
+                                      color: colors.operatorButton,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                  label: const Text(
-                                    'Edit Drawing',
-                                    style: TextStyle(fontSize: 12),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(0xFF2A2626)
+                                          : const Color(0xFFF0F0F0),
+                                      borderRadius: BorderRadius.circular(16.0),
+                                      border: Border.all(
+                                        color: colors.operatorButton,
+                                        width: 2.0,
+                                      ),
+                                    ),
+                                    child: DrawingCanvasView(
+                                      strokes: state.note.drawings,
+                                      currentPoints: state.currentStrokePoints,
+                                      activeColorHex: state.drawingColorHex,
+                                      activeStrokeWidth:
+                                          state.drawingStrokeWidth,
+                                      isInteractive: true,
+                                      height:
+                                          MediaQuery.of(context).orientation ==
+                                              Orientation.landscape
+                                          ? 190
+                                          : 260,
+                                      onPanStart: (pos) =>
+                                          _cubit.startStroke(pos.dx, pos.dy),
+                                      onPanUpdate: (pos) =>
+                                          _cubit.addStrokePoint(pos.dx, pos.dy),
+                                      onPanEnd: _cubit.endStroke,
+                                    ),
                                   ),
-                                  onPressed: () => _cubit.setDrawingMode(true),
-                                ),
+                                  const SizedBox(height: 16),
+                                ] else if (state.note.hasDrawings) ...[
+                                  // Rendered drawings viewer when not actively drawing
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Drawings',
+                                        style: TextStyle(
+                                          color: colors.textSecondary,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      TextButton.icon(
+                                        icon: const Icon(
+                                          Icons.edit_rounded,
+                                          size: 14,
+                                        ),
+                                        label: const Text(
+                                          'Edit Drawing',
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                        onPressed: () =>
+                                            _cubit.setDrawingMode(true),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(0xFF2A2626)
+                                          : const Color(0xFFF7F7F7),
+                                      borderRadius: BorderRadius.circular(16.0),
+                                      border: Border.all(
+                                        color: isDark
+                                            ? Colors.white12
+                                            : colors.numberButtonBorder,
+                                      ),
+                                    ),
+                                    child: DrawingCanvasView(
+                                      strokes: state.note.drawings,
+                                      isInteractive: false,
+                                      height:
+                                          MediaQuery.of(context).orientation ==
+                                              Orientation.landscape
+                                          ? 170
+                                          : 220,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                ],
                               ],
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(0xFF2A2626)
-                                    : const Color(0xFFF7F7F7),
-                                borderRadius: BorderRadius.circular(16.0),
-                                border: Border.all(
-                                  color: isDark
-                                      ? Colors.white12
-                                      : colors.numberButtonBorder,
-                                ),
-                              ),
-                              child: DrawingCanvasView(
-                                strokes: state.note.drawings,
-                                isInteractive: false,
-                                height: 220,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                        ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
 
-                  // Bottom formatting toolbar
-                  FormattingToolbar(cubit: _cubit, state: state),
-                ],
+                    // Bottom formatting toolbar
+                    FormattingToolbar(cubit: _cubit, state: state),
+                  ],
+                ),
               ),
             ),
           );
