@@ -10,6 +10,18 @@ The application features four core modes:
 3. **Math Notes**: A local-first rich note-taking environment supporting formatted text, bullet lists, freehand vector drawings, and high-fidelity PDF sharing.
 4. **Convert**: Multi-category units converter covering 15 measurement categories (Angle, Area, Currency, Data, Energy, Force, Fuel, Length, Power, Pressure, Speed, Temperature, Time, Volume, and Weight) powered by live exchange rates and high-precision scientific conversion formulas.
 
+## Screenshots
+
+| Basic Calculator | Scientific Calculator | Units & Currency |
+|:---:|:---:|:---:|
+| <img src="screenshots/basic_calculator.png" width="230" alt="Basic Calculator Screen" /> | <img src="screenshots/scientific_calculator.png" width="230" alt="Scientific Calculator Screen" /> | <img src="screenshots/unit_converter.png" width="230" alt="Unit & Currency Converter Screen" /> |
+| **Basic Mode**<br>Daily arithmetic with squircle keypad | **Scientific Mode**<br>Trigonometry, roots, powers, & constants | **Units & Currency**<br>15 measurement categories & live rates |
+
+| Math Notes | Calculation History |
+|:---:|:---:|
+| <img src="screenshots/math_notes.png" width="230" alt="Math Notes Screen" /> | <img src="screenshots/history.png" width="230" alt="Calculation History Screen" /> |
+| **Math Notes Hub**<br>Rich-text notes & freehand vector drawings | **Calculation History**<br>7-calendar-day local retention & entry reuse |
+
 ## Design Identity
 
 - **Primary Brand Color**: `#64AFFA`
@@ -40,6 +52,7 @@ The application features four core modes:
 - [x] **Phase 6**: Currency Converter
 - [x] **Phase 7**: Security Hardening, Full Regression Testing, and Release Readiness
 - [x] **Phase 8**: Multi-Category Units Converter
+- [x] **Phase 9**: Landscape Orientation Support and Responsive UI Optimization
 
 ## Architecture & Features
 
@@ -121,7 +134,7 @@ dart format --output=none --set-exit-if-changed .
 # Static code analysis (zero warnings/errors)
 flutter analyze
 
-# Full automated regression & unit test suite (197 tests)
+# Full automated regression & unit test suite (251 tests)
 flutter test
 
 # Build debug APK
